@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCK IN PRO MAX</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LOCK IN MAX">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f172a'/%3E%3Ctext y='70' x='20' font-size='60'%3E🔥%3C/text%3E%3C/svg%3E">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            overscroll-behavior-y: contain;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f1f5f9;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0;}
+            100% { transform: scale(1); opacity: 1;}
+        }
+        .animate-pop { animation: pop 0.3s ease-out forwards; }
+        
+        .tile-matematicas { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .tile-fisica { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+        .tile-quimica { background: linear-gradient(135deg, #059669, #047857); }
+        .tile-biologia { background: linear-gradient(135deg, #65a30d, #4d7c0f); }
+        .tile-historia { background: linear-gradient(135deg, #d97706, #b45309); }
+        .tile-escrita { background: linear-gradient(135deg, #db2777, #be185d); }
+        .tile-lectura { background: linear-gradient(135deg, #0891b2, #0e7490); }
+
+        .btn-option:active { transform: scale(0.98); }
+        .correct-answer { background-color: #10b981 !important; color: white !important; border-color: #059669 !important; }
+        .wrong-answer { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+        
+        /* Ocultar scrollbar */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col pb-safe">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 pt-safe">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="goHome()">
+                <div class="text-2xl">🔥</div>
+                <h1 class="font-black text-xl tracking-tight text-slate-900">LOCK IN <span class="text-rose-600">MAX</span></h1>
+            </div>
+            <div id="score-display" class="hidden font-bold text-lg text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
+                ⭐ 0
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-md w-full mx-auto overflow-y-auto mb-16" id="app-container">
+        <!-- Vistas inyectadas por JS -->
+    </main>
+
+    <!-- Bottom Navbar -->
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 pb-safe">
+        <div class="max-w-md mx-auto flex justify-around p-3">
+            <button onclick="goHome()" class="flex flex-col items-center text-slate-400 hover:text-rose-600 transition" id="nav-quiz">
+                <span class="text-xl mb-1">🎯</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Quiz</span>
+            </button>
+            <button onclick="renderStats()" class="flex flex-col items-center text-slate-400 hover:text-rose-600 transition" id="nav-stats">
+                <span class="text-xl mb-1">📈</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Progreso</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Script Principal -->
+    <script>
+        // --- MEGA BANCO DE PREGUNTAS (Nivel Examen UNAM/IPN) ---
+        const examQuestions = [
+            // MATEMÁTICAS (15)
+            {s:'matematicas', q:"Calcula el límite: lim(x→0) sen(3x) / x", o:["0", "1", "3", "Indeterminado"], c:2, e:"Usando el límite notable lim(x→0) sen(kx)/x = k. Aquí k=3, por lo tanto el límite es 3."},
+            {s:'matematicas', q:"¿Cuál es la derivada de f(x) = ln(x² + 1)?", o:["2x / (x² + 1)", "1 / (x² + 1)", "2x", "x / (x² + 1)"], c:0, e:"Por la regla de la cadena: d/dx[ln(u)] = u'/u. Aquí u = x²+1, entonces u' = 2x. El resultado es 2x/(x²+1)."},
+            {s:'matematicas', q:"Evalúa la integral indefinida ∫(2x + e^x) dx", o:["x² + e^x + C", "2 + e^x + C", "x² + xe^x + C", "x² - e^x + C"], c:0, e:"La integral de 2x es x². La integral de e^x es e^x. Se suma la constante de integración C."},
+            {s:'matematicas', q:"Coordenadas del centro de la circunferencia x² + y² - 6x + 4y - 12 = 0", o:["(-3, 2)", "(3, -2)", "(6, -4)", "(-6, 4)"], c:1, e:"Dividiendo los coeficientes de x e y entre -2. Centro (h,k) = (-D/2, -E/2) = (-(-6)/2, -(4)/2) = (3, -2)."},
+            {s:'matematicas', q:"Simplifica: (x³ - 8) / (x - 2)", o:["x² - 4", "x² + 2x + 4", "x² - 2x + 4", "x² + 4"], c:1, e:"Diferencia de cubos: a³-b³ = (a-b)(a²+ab+b²). x³-8 = (x-2)(x²+2x+4). Al dividir, se cancela (x-2)."},
+            {s:'matematicas', q:"Si f(x) = x² y g(x) = 2x-1, ¿cuál es f(g(x))?", o:["2x² - 1", "4x² - 4x + 1", "4x² - 1", "2x³ - x²"], c:1, e:"Sustituye g(x) dentro de f: (2x-1)². Expandiendo el binomio: 4x² - 4x + 1."},
+            {s:'matematicas', q:"Dominio de la función f(x) = log(x - 3)", o:["x ≥ 3", "x > 0", "x < 3", "x > 3"], c:3, e:"El argumento del logaritmo debe ser estrictamente positivo. x - 3 > 0, por lo que x > 3."},
+            {s:'matematicas', q:"Solución del sistema: 3x - y = 7 y 2x + 3y = 12", o:["x=3, y=2", "x=2, y=-1", "x=4, y=5", "x=1, y=-4"], c:0, e:"Multiplica la 1ra por 3: 9x-3y=21. Sumando con la 2da: 11x = 33 -> x=3. Sustituyendo en la 1ra: 3(3)-y=7 -> y=2."},
+            {s:'matematicas', q:"Si el discriminante (b² - 4ac) de una ecuación cuadrática es menor a 0:", o:["Tiene dos raíces reales iguales", "Tiene dos raíces reales diferentes", "No tiene raíces reales", "Es una recta"], c:2, e:"Si el discriminante es negativo, la ecuación arroja raíces imaginarias/complejas (no reales)."},
+            {s:'matematicas', q:"Pendiente de la recta perpendicular a y = (2/3)x - 5", o:["2/3", "-2/3", "3/2", "-3/2"], c:3, e:"Dos rectas son perpendiculares si el producto de sus pendientes es -1 (son inversas y de signo contrario). Inverso de 2/3 es -3/2."},
+            {s:'matematicas', q:"La expresión sen²(x) + cos²(x) equivale a:", o:["1", "tg(x)", "0", "sec²(x)"], c:0, e:"Identidad pitagórica fundamental de la trigonometría."},
+            {s:'matematicas', q:"¿Cuál es la distancia entre los puntos A(-2, 3) y B(1, -1)?", o:["4", "5", "7", "25"], c:1, e:"Fórmula de distancia: d = √[(1 - (-2))² + (-1 - 3)²] = √[3² + (-4)²] = √[9 + 16] = √25 = 5."},
+            {s:'matematicas', q:"Resuelve la desigualdad: |2x - 1| < 5", o:["-3 < x < 3", "-2 < x < 3", "x < 3", "x > -2"], c:1, e:"Propiedad del valor absoluto: -5 < 2x - 1 < 5. Sumas 1 a todo: -4 < 2x < 6. Divides entre 2: -2 < x < 3."},
+            {s:'matematicas', q:"Una matriz A tiene dimensión 2x3 y B es 3x4. ¿Dimensión de A*B?", o:["2x4", "3x3", "No se puede multiplicar", "2x3"], c:0, e:"Los números internos coinciden (3 y 3). La matriz resultante hereda las filas de A y columnas de B (2x4)."},
+            {s:'matematicas', q:"Probabilidad de obtener al menos un águila al lanzar 2 monedas:", o:["1/4", "1/2", "3/4", "1"], c:2, e:"Espacio muestral: AA, AS, SA, SS. En tres casos hay al menos un águila (AA, AS, SA). Prob. = 3/4."},
+            {s:'matematicas', q:"Calcula: 5 + 3 × 2", o:["16", "11", "20", "10"], c:1, e:"Por jerarquía de operaciones, primero se multiplica (3 × 2 = 6) y luego se suma (5 + 6 = 11)."},
+            {s:'matematicas', q:"Resuelve para x: 3x - 7 = 14", o:["7", "21", "10", "4"], c:0, e:"Pasas el 7 sumando: 3x = 21. Divides entre 3: x = 7."},
+            {s:'matematicas', q:"Convierte 0.75 a fracción irreducible:", o:["3/4", "75/100", "1/4", "4/3"], c:0, e:"0.75 equivale a 75/100. Dividiendo ambos entre 25, obtenemos 3/4."},
+            {s:'matematicas', q:"¿Cuál es el área de un triángulo de base 6m y altura 4m?", o:["24 m²", "10 m²", "12 m²", "20 m²"], c:2, e:"La fórmula es (base × altura) / 2. (6 × 4) / 2 = 24 / 2 = 12 m²."},
+            {s:'matematicas', q:"Simplifica: (x³)²", o:["x⁵", "x⁶", "x⁹", "x"], c:1, e:"Al elevar una potencia a otra potencia, los exponentes se multiplican: 3 × 2 = 6."},
+
+            // FÍSICA (15)
+            {s:'fisica', q:"Si la distancia entre dos masas se reduce a la mitad, la fuerza gravitacional entre ellas:", o:["Se reduce a la mitad", "Se duplica", "Se cuadruplica", "No cambia"], c:2, e:"Fórmula: F = G(m1m2)/r². Si 'r' se divide entre 2, su cuadrado divide entre 4. Por ley de sándwich, la fuerza se multiplica por 4."},
+            {s:'fisica', q:"Unidad de la potencia eléctrica en el Sistema Internacional:", o:["Voltio", "Amperio", "Joule", "Watt"], c:3, e:"La potencia (rapidez con la que se transfiere energía) se mide en Joules/segundo, que equivale a Watts."},
+            {s:'fisica', q:"La energía cinética de un cuerpo depende directamente de:", o:["Su masa y su altura", "Su masa y el cuadrado de su velocidad", "Su peso y su aceleración", "Su densidad y volumen"], c:1, e:"Fórmula de la energía cinética: Ec = (1/2) * m * v². Depende de la masa y el cuadrado de la velocidad."},
+            {s:'fisica', q:"En un proceso isotérmico de un gas ideal, ¿qué variable se mantiene constante?", o:["Presión", "Volumen", "Calor", "Temperatura"], c:3, e:"El prefijo 'iso' significa igual, y 'térmico' se refiere a temperatura. T = constante."},
+            {s:'fisica', q:"Principio que explica por qué los aviones pueden volar (sustentación):", o:["Principio de Arquímedes", "Principio de Bernoulli", "Ley de Pascal", "Efecto Doppler"], c:1, e:"El Principio de Bernoulli establece que a mayor velocidad de un fluido (aire), menor presión. La diferencia de presión eleva al avión."},
+            {s:'fisica', q:"Para que exista transferencia de calor entre dos cuerpos, es condición necesaria y suficiente que:", o:["Tengan diferente masa", "Tengan diferente temperatura", "Estén en estado líquido", "Tengan diferente calor específico"], c:1, e:"El calor es energía en tránsito que fluye exclusivamente debido a una diferencia de temperatura."},
+            {s:'fisica', q:"Un objeto se suelta desde el reposo. ¿Qué distancia cae en los primeros 3 segundos? (g = 10 m/s²)", o:["15 m", "30 m", "45 m", "90 m"], c:2, e:"Fórmula de caída libre: d = (1/2)gt². d = (0.5)(10)(3²) = 5 * 9 = 45 metros."},
+            {s:'fisica', q:"La luz tiene naturaleza dual, comportándose como:", o:["Masa y volumen", "Onda y partícula", "Calor y sonido", "Aceleración y velocidad"], c:1, e:"Según la física cuántica, la luz exhibe características de ondas (interferencia) y partículas (fotones)."},
+            {s:'fisica', q:"Es la resistencia que oponen los materiales al flujo de corriente eléctrica:", o:["Voltaje", "Resistencia", "Capacitancia", "Inductancia"], c:1, e:"La resistencia eléctrica se mide en Ohms y limita el paso de los electrones."},
+            {s:'fisica', q:"Según la Tercera Ley de Newton, las fuerzas de acción y reacción:", o:["Se cancelan mutuamente", "Actúan sobre el mismo cuerpo", "Actúan sobre cuerpos diferentes", "Tienen diferente magnitud"], c:2, e:"Actúan sobre objetos distintos (A empuja a B, B empuja a A), por lo tanto NO se anulan entre sí."},
+            {s:'fisica', q:"Magnitud vectorial que mide la variación de la velocidad respecto al tiempo:", o:["Fuerza", "Rapidez", "Desplazamiento", "Aceleración"], c:3, e:"La aceleración (a = Δv/Δt) indica qué tan rápido cambia la velocidad."},
+            {s:'fisica', q:"Si tres resistencias de 6 Ohms se conectan en paralelo, la resistencia total es:", o:["18 Ohms", "2 Ohms", "6 Ohms", "1/2 Ohms"], c:1, e:"En paralelo para resistencias iguales: R_eq = R / n = 6 / 3 = 2 Ohms."},
+            {s:'fisica', q:"Fuerza de empuje que recibe un cuerpo sumergido es igual al peso del fluido desplazado:", o:["Arquímedes", "Pascal", "Newton", "Boyle"], c:0, e:"Es el enunciado exacto del Principio de Arquímedes (flotabilidad)."},
+            {s:'fisica', q:"Cambio aparente en la frecuencia de una onda debido al movimiento relativo entre la fuente y el observador:", o:["Efecto Compton", "Efecto Fotoeléctrico", "Efecto Doppler", "Difracción"], c:2, e:"El Efecto Doppler explica por qué la sirena de una ambulancia cambia de tono al acercarse y alejarse."},
+            {s:'fisica', q:"¿A cuántos grados Kelvin equivalen 20 °C?", o:["253.15 K", "273.15 K", "293.15 K", "313.15 K"], c:2, e:"Fórmula: K = °C + 273.15. Por lo tanto, 20 + 273.15 = 293.15 K."},
+
+            // QUÍMICA (15)
+            {s:'quimica', q:"Partícula subatómica responsable de la formación de enlaces químicos:", o:["Neutrón", "Protón", "Positrón", "Electrón de valencia"], c:3, e:"Los electrones de la capa más externa (valencia) son los que se comparten o ceden para formar enlaces."},
+            {s:'quimica', q:"Número cuántico principal 'n' determina:", o:["La forma del orbital", "El nivel de energía y tamaño", "La orientación espacial", "El espín del electrón"], c:1, e:"El número 'n' (1, 2, 3...) indica el nivel energético y la distancia promedio del núcleo (tamaño)."},
+            {s:'quimica', q:"¿Cuántos moles hay en 36 gramos de agua (H₂O)?", o:["1 mol", "2 moles", "3 moles", "0.5 moles"], c:1, e:"Masa molar H₂O = (2x1) + 16 = 18 g/mol. Moles = Masa / Masa molar = 36 / 18 = 2 moles."},
+            {s:'quimica', q:"En una reacción REDOX, el agente oxidante es la especie química que:", o:["Cede protones", "Se oxida", "Gana electrones (se reduce)", "Pierde electrones"], c:2, e:"El agente oxidante provoca la oxidación de otro, y al hacerlo, él mismo acepta esos electrones (se reduce)."},
+            {s:'quimica', q:"Según Brønsted-Lowry, una base es una sustancia capaz de:", o:["Aceptar protones (H+)", "Donar protones (H+)", "Donar electrones", "Liberar iones OH-"], c:0, e:"Brønsted-Lowry define ácidos como donadores de protones (H+) y bases como aceptores de protones."},
+            {s:'quimica', q:"Reacción que libera calor hacia su entorno:", o:["Endotérmica", "Exotérmica", "Catabólica", "Isotérmica"], c:1, e:"Exo (fuera) + térmica (calor). Ejemplo: la combustión."},
+            {s:'quimica', q:"Configuración electrónica correcta del Carbono (Z=6):", o:["1s² 2s² 2p¹", "1s² 2s² 2p²", "1s² 2p⁴", "1s² 2s² 2p⁶"], c:1, e:"Se acomodan 6 electrones: 2 en el 1s, 2 en el 2s, y quedan 2 para el orbital 2p."},
+            {s:'quimica', q:"El enlace peptídico es característico en la estructura de:", o:["Carbohidratos", "Lípidos", "Ácidos nucleicos", "Proteínas"], c:3, e:"Une aminoácidos para formar polipéptidos y proteínas."},
+            {s:'quimica', q:"Principio que establece que si se aplica estrés a un sistema en equilibrio, este se desplaza para contrarrestarlo:", o:["Ley de Hess", "Ley de Lavoisier", "Principio de Le Chatelier", "Ley de Avogadro"], c:2, e:"El principio de Le Chatelier dicta cómo los sistemas químicos reaccionan a cambios de concentración, presión o temperatura."},
+            {s:'quimica', q:"Fórmula general de los alcanos:", o:["CnH2n", "CnH2n-2", "CnH2n+2", "CnHn"], c:2, e:"Son hidrocarburos saturados. Por cada carbono, hay el doble de hidrógenos más dos (CnH2n+2)."},
+            {s:'quimica', q:"Elemento más electronegativo de la tabla periódica:", o:["Oxígeno", "Cloro", "Flúor", "Nitrógeno"], c:2, e:"El Flúor (arriba a la derecha, sin contar gases nobles) tiene la mayor capacidad para atraer electrones."},
+            {s:'quimica', q:"pH de una solución cuya concentración de iones [H+] es 1 x 10⁻⁴ M:", o:["10", "4", "-4", "14"], c:1, e:"Fórmula: pH = -log[H+]. pH = -log(10⁻⁴) = 4."},
+            {s:'quimica', q:"Gas responsable del efecto invernadero y producto de la combustión completa:", o:["Monóxido de carbono (CO)", "Dióxido de carbono (CO₂)", "Ozono (O₃)", "Clorofluorocarbono"], c:1, e:"El CO₂ se libera al quemar hidrocarburos y atrapa calor en la atmósfera."},
+            {s:'quimica', q:"¿Qué tipo de enlace se presenta en la molécula de O₂?", o:["Iónico", "Covalente polar", "Covalente no polar", "Puente de hidrógeno"], c:2, e:"Al unirse dos átomos del mismo elemento, la diferencia de electronegatividad es 0, los electrones se comparten equitativamente (no polar)."},
+            {s:'quimica', q:"Isótopos son átomos del mismo elemento que difieren en el número de:", o:["Protones", "Electrones", "Neutrones", "Niveles de energía"], c:2, e:"Tienen el mismo número atómico (protones) pero diferente masa debido a una cantidad variable de neutrones."},
+
+            // BIOLOGÍA (15)
+            {s:'biologia', q:"Proceso metabólico mediante el cual se degrada la glucosa hasta piruvato generando 2 ATP netos:", o:["Ciclo de Krebs", "Glucólisis", "Cadena respiratoria", "Fermentación"], c:1, e:"La glucólisis ocurre en el citoplasma y es el primer paso tanto en respiración aerobia como anaerobia."},
+            {s:'biologia', q:"En el dogma central de la biología, la transcripción consiste en:", o:["Copiar ADN a ADN", "Traducir ARN a Proteína", "Crear ARNm a partir de un molde de ADN", "Replicar ribosomas"], c:2, e:"Transcripción es 'reescribir' el código genético del ADN a ARN mensajero (ARNm) para que pueda salir del núcleo."},
+            {s:'biologia', q:"Tipo de transporte celular que requiere gasto de energía (ATP):", o:["Ósmosis", "Difusión facilitada", "Transporte activo", "Difusión simple"], c:2, e:"El transporte activo mueve sustancias en contra del gradiente de concentración, por lo que necesita invertir ATP (ej. Bomba de Sodio-Potasio)."},
+            {s:'biologia', q:"Postulado de Darwin y Wallace sobre la evolución:", o:["Uso y desuso de órganos", "Herencia de caracteres adquiridos", "Selección natural", "Generación espontánea"], c:2, e:"Establece que los individuos mejor adaptados a su entorno tienen más probabilidades de sobrevivir y reproducirse."},
+            {s:'biologia', q:"La fase luminosa de la fotosíntesis ocurre en:", o:["Estroma del cloroplasto", "Matriz mitocondrial", "Membrana celular", "Tilacoides del cloroplasto"], c:3, e:"En los tilacoides están los pigmentos fotosintéticos (clorofila) que captan la luz para generar ATP y NADPH."},
+            {s:'biologia', q:"Cruza un chícharo homocigoto dominante (AA) con un homocigoto recesivo (aa). Genotipo de la F1:", o:["100% Aa", "50% AA, 50% aa", "100% AA", "75% Aa, 25% aa"], c:0, e:"La primera generación (F1) hereda un alelo dominante 'A' y uno recesivo 'a', resultando en descendencia 100% heterocigota (Aa)."},
+            {s:'biologia', q:"Base nitrogenada presente en el ARN pero ausente en el ADN:", o:["Timina", "Guanina", "Citosina", "Uracilo"], c:3, e:"En el ARN, el Uracilo (U) reemplaza a la Timina (T) uniéndose con la Adenina (A)."},
+            {s:'biologia', q:"La mitosis produce ___ células hijas con ___ de cromosomas que la célula madre.", o:["4, la mitad", "2, el mismo número", "2, el doble", "4, el mismo número"], c:1, e:"Mitosis es división de células somáticas. Genera 2 células idénticas (diploides, igual número cromosómico)."},
+            {s:'biologia', q:"Relación simbiótica donde un organismo se beneficia y el otro no se afecta ni beneficia:", o:["Parasitismo", "Mutualismo", "Comensalismo", "Depredación"], c:2, e:"En el comensalismo, uno gana y al otro le da igual (ej. las rémoras nadando junto al tiburón)."},
+            {s:'biologia', q:"El reino que agrupa organismos procariotas (como las bacterias) es:", o:["Fungi", "Protista", "Monera", "Plantae"], c:2, e:"El Reino Monera es el único constituido exclusivamente por organismos procariotas unicelulares (sin núcleo verdadero)."},
+            {s:'biologia', q:"¿Cuál es la función principal de los ribosomas?", o:["Almacenar ADN", "Digestión celular", "Síntesis de proteínas", "Producción de lípidos"], c:2, e:"Los ribosomas 'leen' el ARN mensajero y ensamblan aminoácidos para sintetizar proteínas."},
+            {s:'biologia', q:"Etapa de la respiración aerobia que produce la mayor cantidad de ATP:", o:["Glucólisis", "Ciclo de Krebs", "Fase oscura", "Cadena transportadora de electrones"], c:3, e:"La cadena transportadora de electrones (junto con la quimiósmosis) genera aproximadamente 32-34 ATP por molécula de glucosa."},
+            {s:'biologia', q:"Mecanismo de especiación que ocurre por aislamiento geográfico:", o:["Especiación simpátrica", "Especiación alopátrica", "Selección artificial", "Deriva génica"], c:1, e:"'Alos' significa 'otro' y 'patria' lugar. Una barrera física separa la población y evolucionan distinto."},
+            {s:'biologia', q:"Organismo autotrófo base de la cadena alimenticia en ecosistemas terrestres:", o:["Consumidores primarios", "Descomponedores", "Productores", "Depredadores tope"], c:2, e:"Las plantas y otros autotrófos fotosintéticos producen la materia orgánica inicial de la red trófica."},
+            {s:'biologia', q:"Componente estructural primario de la pared celular de las plantas:", o:["Quitina", "Glucógeno", "Colágeno", "Celulosa"], c:3, e:"La celulosa es un polisacárido que otorga rigidez y soporte a las paredes celulares vegetales."},
+
+            // HISTORIA (15)
+            {s:'historia', q:"Tratado que dio fin oficial a la Primera Guerra Mundial e impuso duras sanciones a Alemania:", o:["Tratado de Versalles", "Tratado de Tordesillas", "Tratado de Yalta", "Pacto de Varsovia"], c:0, e:"Firmado en 1919, desmanteló el ejército alemán e impuso deudas impagables, sentando las bases de la 2da Guerra."},
+            {s:'historia', q:"Periodo de México en el que Plutarco Elías Calles controló la presidencia sin ser el presidente en turno:", o:["Porfiriato", "Reforma", "El Maximato", "Guerra Cristera"], c:2, e:"Calles se autoproclamó 'Jefe Máximo de la Revolución' y controló a tres presidentes (1928-1934)."},
+            {s:'historia', q:"Causa inmediata del inicio de la Segunda Guerra Mundial en 1939:", o:["Asesinato del Archiduque Francisco Fernando", "Bombardeo a Pearl Harbor", "Invasión de Alemania a Polonia", "Guerra Civil Española"], c:2, e:"La invasión de Polonia (1 septiembre 1939) provocó que Francia y Gran Bretaña declararan la guerra a la Alemania nazi."},
+            {s:'historia', q:"Documento firmado por Santa Anna donde reconocía la independencia de Texas:", o:["Tratados de Córdoba", "Tratados de Velasco", "Tratado de Guadalupe Hidalgo", "Plan de Iguala"], c:1, e:"Firmados en 1836 tras ser capturado en la batalla de San Jacinto."},
+            {s:'historia', q:"Presidente que promulgó las Leyes de Reforma (separación Iglesia-Estado):", o:["Benito Juárez", "Sebastián Lerdo de Tejada", "Ignacio Comonfort", "Porfirio Díaz"], c:0, e:"Benito Juárez fue el principal impulsor de estas leyes durante la Guerra de Reforma."},
+            {s:'historia', q:"Acontecimiento que marca el inicio de la Edad Contemporánea:", o:["Caída de Constantinopla", "Revolución Rusa", "Revolución Francesa", "Descubrimiento de América"], c:2, e:"La Revolución Francesa (1789) rompe con el Antiguo Régimen, inaugurando la Edad Contemporánea."},
+            {s:'historia', q:"Bloque militar creado durante la Guerra Fría para contrarrestar a la OTAN:", o:["ONU", "Liga de las Naciones", "Triple Entente", "Pacto de Varsovia"], c:3, e:"Fue una alianza militar de los países del bloque socialista (liderado por la URSS) en respuesta a la OTAN (capitalistas)."},
+            {s:'historia', q:"Plan mediante el cual Francisco I. Madero llamó a levantarse en armas contra Porfirio Díaz:", o:["Plan de Ayala", "Plan de San Luis", "Plan de Guadalupe", "Plan de Tuxtepec"], c:1, e:"Promulgado en 1910, convocó al levantamiento armado el 20 de noviembre de ese año."},
+            {s:'historia', q:"Imperio mesoamericano que cayó ante los españoles el 13 de agosto de 1521:", o:["Maya", "Tolteca", "Inca", "Mexica (Azteca)"], c:3, e:"La caída de Tenochtitlán marcó la derrota del Imperio Mexica y el inicio de la época colonial."},
+            {s:'historia', q:"Líder de la Revolución Bolchevique que instauró el régimen comunista en Rusia:", o:["Iósif Stalin", "Vladímir Lenin", "León Trotsky", "Zar Nicolás II"], c:1, e:"Lenin lideró el golpe de Estado en octubre de 1917, estableciendo el primer estado socialista del mundo."},
+            {s:'historia', q:"Presidente de México que nacionalizó la industria petrolera el 18 de marzo de 1938:", o:["Álvaro Obregón", "Lázaro Cárdenas", "Manuel Ávila Camacho", "Miguel Alemán"], c:1, e:"El General Lázaro Cárdenas expropió el petróleo a las compañías extranjeras tras un conflicto laboral."},
+            {s:'historia', q:"El 'Crack del 29' fue una profunda crisis económica iniciada en:", o:["Alemania", "Inglaterra", "Rusia", "Estados Unidos"], c:3, e:"La caída de la bolsa de Wall Street en Nueva York desató la Gran Depresión mundial."},
+            {s:'historia', q:"Guerra que México enfrentó por el impago de su deuda externa con Francia (1862-1867):", o:["Guerra de los Pasteles", "Guerra de Castas", "Segunda Intervención Francesa", "Guerra Cristera"], c:2, e:"Resultó en el efímero Segundo Imperio Mexicano bajo el mando de Maximiliano de Habsburgo."},
+            {s:'historia', q:"Movimiento filosófico del siglo XVIII que impulsó el uso de la razón y el conocimiento científico:", o:["Renacimiento", "Romanticismo", "La Ilustración", "Positivismo"], c:2, e:"La Ilustración, o 'Siglo de las Luces', cuestionó el poder monárquico y religioso, fundamentando las revoluciones burguesas."},
+            {s:'historia', q:"Etapa de tensión política mundial donde hubo carrera armamentista y conquista espacial sin enfrentamiento bélico directo:", o:["Paz Armada", "Guerra Fría", "Imperialismo", "Guerra de los Balcanes"], c:1, e:"La Guerra Fría (1947-1991) enfrentó indirectamente al bloque capitalista y comunista en escenarios periféricos y tecnológicos."},
+
+            // COMPRENSIÓN ESCRITA (ESPAÑOL) (15)
+            {s:'escrita', q:"Identifica la oración con concordancia correcta:", o:["Hubieron muchas personas en la fiesta.", "Hubo muchas personas en la fiesta.", "Habían varias personas en la fiesta.", "Han habidos personas en la fiesta."], c:1, e:"El verbo 'haber' es impersonal cuando indica existencia; siempre se conjuga en tercera persona singular (hubo, había)."},
+            {s:'escrita', q:"Función de la lengua que busca convencer, persuadir o influir en el receptor:", o:["Función referencial", "Función poética", "Función fática", "Función apelativa"], c:3, e:"La función apelativa o conativa se centra en el receptor, usada comúnmente en discursos políticos y publicidad."},
+            {s:'escrita', q:"Elige el nexo coordinante adversativo en la oración: 'Estudió mucho, ___ no aprobó el examen'.", o:["porque", "así que", "pero", "y"], c:2, e:"Los nexos adversativos oponen ideas (pero, mas, sin embargo, sino)."},
+            {s:'escrita', q:"¿Cuál de las siguientes palabras es ESDRÚJULA y debe llevar tilde?", o:["Examen", "Volumen", "Critico (verbo criticar)", "Cómputo"], c:3, e:"Las esdrújulas se acentúan en la antepenúltima sílaba y SIEMPRE llevan tilde. 'Examen' y 'volumen' son llanas terminadas en 'n', no llevan tilde."},
+            {s:'escrita', q:"Vicio del lenguaje que consiste en el empleo de vocablos innecesarios (redundancia):", o:["Solecismo", "Barbarismo", "Pleonasmo", "Cacofonía"], c:2, e:"Ejemplo de pleonasmo: 'subir para arriba', 'lapso de tiempo', 'verlo con mis propios ojos'."},
+            {s:'escrita', q:"En la oración 'La niña compró dulces para su hermano', el objeto indirecto es:", o:["La niña", "compró", "dulces", "para su hermano"], c:3, e:"El Objeto Indirecto responde a la pregunta '¿Para quién?' o '¿A quién?' se realiza la acción."},
+            {s:'escrita', q:"Indica el par de palabras homófonas correctas para: 'Espero que él ___ a la casa y salte la ___'.", o:["vaya / vaya", "valla / vaya", "vaya / valla", "valla / valla"], c:2, e:"'Vaya' es del verbo ir (espero que vaya). 'Valla' es una cerca u obstáculo."},
+            {s:'escrita', q:"Elige la oración donde se usa correctamente el acento diacrítico:", o:["El me dijo que sí vendría.", "Té sirvo más café.", "Sé más cuidadoso con tú mochila.", "Aún no ha llegado el profesor."], c:3, e:"'Aún' lleva tilde cuando equivale a 'todavía'. 'Él' lleva tilde como pronombre, 'té' como bebida, 'tú' como pronombre, 'sé' del verbo ser/saber."},
+            {s:'escrita', q:"Sinónimo de la palabra 'Efímero':", o:["Duradero", "Fugaz", "Eterno", "Frecuente"], c:1, e:"Efímero significa que dura muy poco tiempo, por lo tanto 'fugaz' es su sinónimo directo."},
+            {s:'escrita', q:"Sujeto morfológico (tácito) de la oración: 'Llegamos tarde al concierto'.", o:["El concierto", "Tarde", "Nosotros", "Ellos"], c:2, e:"El sujeto no está escrito, pero la terminación del verbo (llegamos) indica que el sujeto implícito es 'nosotros'."},
+            {s:'escrita', q:"'Su rostro era de porcelana' es un ejemplo de la figura retórica llamada:", o:["Metáfora", "Símil", "Hipérbaton", "Paradoja"], c:0, e:"Sustituye un término real por uno imaginario por relación de semejanza, sin usar palabras comparativas como 'cual' o 'como'."},
+            {s:'escrita', q:"Forma del discurso que relata hechos reales o ficticios en una línea temporal:", o:["Argumentativo", "Descriptivo", "Narrativo", "Expositivo"], c:2, e:"La narrativa cuenta sucesos en el tiempo (inicio, clímax, desenlace)."},
+            {s:'escrita', q:"Uso correcto de letras (s, c, z): La mujer tomó una ___ de café y salió de ___.", o:["taza / caza", "tasa / casa", "taza / casa", "tasa / caza"], c:2, e:"Taza (recipiente para beber). Casa (vivienda). (Tasa es índice/impuesto, Caza es atrapar animales)."},
+            {s:'escrita', q:"¿Cuál de estas oraciones es compuesta coordinada copulativa?", o:["Te llamé pero no respondiste.", "Iré al cine y comeré palomitas.", "Estudias o trabajas.", "Dijo que vendría pronto."], c:1, e:"Las copulativas unen información sumando elementos usando los nexos: y, e, ni."},
+            {s:'escrita', q:"Signo de puntuación que separa oraciones independientes que tienen relación de sentido:", o:["Coma", "Punto y seguido", "Punto y coma", "Dos puntos"], c:2, e:"El punto y coma (;) establece una pausa mayor que la coma y menor que el punto, usada para enlazar oraciones estrechamente relacionadas."},
+
+            // LECTURA / LITERATURA (15)
+            {s:'lectura', q:"Corriente literaria del siglo XIX que busca reflejar la realidad social de forma objetiva, cruda y descriptiva:", o:["Romanticismo", "Realismo", "Vanguardismo", "Modernismo"], c:1, e:"El Realismo se opone a los excesos sentimentales del Romanticismo, enfocándose en problemas sociales de la clase media/baja."},
+            {s:'lectura', q:"Premisa 1: Todos los planetas giran alrededor del sol. Premisa 2: Marte es un planeta. Conclusión deductiva:", o:["El sol gira alrededor de Marte.", "Marte gira alrededor del sol.", "Algunos planetas son como Marte.", "Marte no gira alrededor del sol."], c:1, e:"Es un silogismo deductivo básico: lo que aplica a la totalidad aplica al individuo (Marte)."},
+            {s:'lectura', q:"Identifica el género literario en el que el autor expresa de forma subjetiva sus sentimientos íntimos (ej. Odas, Sonetos):", o:["Épico", "Lírico", "Dramático", "Didáctico"], c:1, e:"El género lírico (poesía) transmite emociones y sentimientos, originado por los griegos al recitar versos con una lira."},
+            {s:'lectura', q:"Lee el refrán: 'Camarón que se duerme, se lo lleva la corriente'. La idea IMPLÍCITA es:", o:["Los crustáceos no deben dormir en el mar.", "Hay que descansar para recuperar fuerzas.", "La falta de atención tiene consecuencias negativas.", "Los ríos tienen corrientes fuertes."], c:2, e:"El significado figurado (implícito) advierte sobre las repercusiones de la pasividad o pereza en la vida."},
+            {s:'lectura', q:"El 'Boom Latinoamericano' fue un fenómeno literario del siglo XX. Un autor representativo es:", o:["Miguel de Cervantes", "Sor Juana Inés de la Cruz", "Gabriel García Márquez", "Rubén Darío"], c:2, e:"García Márquez (Cien años de soledad) fue figura central del Boom junto a Vargas Llosa, Cortázar y Fuentes."},
+            {s:'lectura', q:"¿Cuál es el propósito principal de un texto argumentativo (ej. un ensayo)?", o:["Informar sobre un suceso reciente", "Entretener al lector con una historia", "Describir detalladamente un paisaje", "Persuadir al lector sobre una tesis o punto de vista"], c:3, e:"Todo texto argumentativo defiende una postura (tesis) usando premisas válidas para convencer a la audiencia."},
+            {s:'lectura', q:"'Eres más lento que una tortuga amarrada' es un ejemplo de la figura retórica:", o:["Hipérbaton", "Símil", "Metáfora", "Hipérbole"], c:3, e:"La hipérbole es una exageración intencional de la realidad para dar mayor impacto al mensaje."},
+            {s:'lectura', q:"Identifica el texto periodístico que mezcla información objetiva con la opinión personal del redactor:", o:["Noticia", "Artículo de opinión o Crónica", "Reportaje", "Editorial"], c:1, e:"La crónica o artículo interpretativo relata el hecho pero incluye la perspectiva de quien lo firma (a diferencia de la noticia pura)."},
+            {s:'lectura', q:"Corriente poética nacida en América Latina, liderada por Rubén Darío, caracterizada por la estética y preciosismo:", o:["Romanticismo", "Modernismo", "Neoclasicismo", "Naturalismo"], c:1, e:"El Modernismo hispanoamericano (finales del S. XIX) buscaba la belleza estética absoluta (símbolo: el cisne)."},
+            {s:'lectura', q:"Un texto expositivo tiene como característica principal:", o:["Tono subjetivo e íntimo", "Uso abundante de diálogos literarios", "Lenguaje objetivo, claro y uso de tecnicismos", "Finalidad persuasiva de compra"], c:2, e:"Busca explicar o informar hechos, conceptos o descubrimientos sin incluir opiniones (ej. textos escolares, enciclopedias)."},
+            {s:'lectura', q:"Orden correcto de una ficha hemerográfica (de periódico o revista):", o:["Autor, título del artículo, nombre de la publicación, fecha, página.", "Nombre del libro, editorial, ciudad, año.", "URL, fecha de consulta, autor.", "Tema, resumen, autor del comentario."], c:0, e:"La ficha hemerográfica registra datos de publicaciones periódicas (revistas, periódicos). La B es bibliográfica."},
+            {s:'lectura', q:"En 'Cien años de soledad', ¿a qué se refiere el término 'Realismo Mágico'?", o:["Mostrar la magia como una ilusión", "Introducir elementos fantásticos o irreales como algo cotidiano", "Hacer magia real mediante tecnología", "Ignorar la realidad por completo"], c:1, e:"Es la principal característica estética de García Márquez, donde lo sobrenatural se narra con absoluta naturalidad."},
+            {s:'lectura', q:"'Sus cabellos son oro' es metáfora; 'Sus cabellos son COMO oro' es:", o:["Paradoja", "Metonimia", "Símil (o comparación)", "Prosopopeya"], c:2, e:"El símil establece una comparación explícita usando nexos comparativos: como, cual, parece, igual a."},
+            {s:'lectura', q:"Tono de un texto que utiliza burlas sutiles para criticar algo, diciendo lo contrario de lo que se piensa:", o:["Didáctico", "Melancólico", "Irónico", "Informativo"], c:2, e:"La ironía es un recurso retórico que se usa a menudo como herramienta de crítica social o humor mordaz."},
+            {s:'lectura', q:"Obra cumbre de la épica castellana medieval (Cantar de gesta):", o:["Don Quijote de la Mancha", "El Cantar de Mio Cid", "La Divina Comedia", "El Laberinto de la Soledad"], c:1, e:"Es el primer gran poema épico conservado de la literatura española, basado en la vida del caballero Rodrigo Díaz de Vivar."}
+        ];
+
+        // --- ESTADO DE LA APP ---
+        let userQuestions = [];
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentSubject = '';
+
+        const subjectsInfo = {
+            'matematicas': { title: 'Matemáticas', colorClass: 'tile-matematicas', icon: '📐' },
+            'fisica': { title: 'Física', colorClass: 'tile-fisica', icon: '⚛️' },
+            'quimica': { title: 'Química', colorClass: 'tile-quimica', icon: '🧪' },
+            'biologia': { title: 'Biología', colorClass: 'tile-biologia', icon: '🧬' },
+            'historia': { title: 'Historia', colorClass: 'tile-historia', icon: '🏛️' },
+            'escrita': { title: 'Español (Escrita)', colorClass: 'tile-escrita', icon: '✍️' },
+            'lectura': { title: 'Lectura/Lit.', colorClass: 'tile-lectura', icon: '📖' }
+        };
+
+        const appContainer = document.getElementById('app-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const navQuiz = document.getElementById('nav-quiz');
+        const navStats = document.getElementById('nav-stats');
+
+        // --- INICIALIZACIÓN ---
+        function initApp() {
+            const saved = localStorage.getItem('lockin_user_qs');
+            if (saved) {
+                userQuestions = JSON.parse(saved);
+            }
+            goHome(); 
+        }
+
+        // --- NAVEGACIÓN ---
+        function setActiveNav(tab) {
+            navQuiz.classList.remove('text-rose-600');
+            navStats.classList.remove('text-rose-600');
+            if(tab === 'quiz') navQuiz.classList.add('text-rose-600');
+            if(tab === 'stats') navStats.classList.add('text-rose-600');
+        }
+
+        function goHome() {
+            setActiveNav('quiz');
+            scoreDisplay.classList.add('hidden');
+            
+            // Unimos las preguntas base y las del usuario para contar el total real
+            let allQ = [...examQuestions, ...userQuestions];
+            
+            let html = `
+                <div class="px-4 py-6 animate-pop">
+                    <h2 class="text-3xl font-black mb-1">Simulador IPN/UNAM</h2>
+                    <p class="text-slate-500 mb-6 font-semibold">Selecciona el módulo a entrenar:</p>
+                    <div class="grid grid-cols-2 gap-4">
+            `;
+
+            for (const [key, info] of Object.entries(subjectsInfo)) {
+                // Contar reactivos disponibles por materia
+                let qCount = allQ.filter(q => q.s === key).length;
+                
+                html += `
+                    <div onclick="startQuiz('${key}')" class="rounded-3xl p-5 shadow-lg text-white cursor-pointer transform transition active:scale-95 ${info.colorClass}">
+                        <div class="text-4xl mb-3">${info.icon}</div>
+                        <h3 class="font-bold text-lg leading-tight tracking-wide">${info.title}</h3>
+                        <p class="text-xs opacity-90 mt-1 font-semibold">${qCount} Reactivos</p>
+                    </div>
+                `;
+            }
+
+            // Botón Agregar Pregunta
+            html += `
+                    <div onclick="renderAddQuestion()" class="rounded-3xl p-5 shadow-sm text-slate-600 bg-slate-200 cursor-pointer transform transition active:scale-95 flex flex-col justify-center items-center border-2 border-dashed border-slate-400 hover:bg-slate-300">
+                        <div class="text-3xl mb-2">➕</div>
+                        <h3 class="font-bold text-sm leading-tight text-center">Añadir<br>Pregunta</h3>
+                    </div>
+            `;
+
+            html += `</div></div>`;
+            appContainer.innerHTML = html;
+        }
+
+        // --- SISTEMA DE ESTADÍSTICAS ---
+        function saveSessionStat(subject, score, total) {
+            let history = JSON.parse(localStorage.getItem('lockin_stats')) || [];
+            history.push({
+                subject: subject,
+                score: score,
+                total: total,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('lockin_stats', JSON.stringify(history));
+        }
+
+        function renderStats() {
+            setActiveNav('stats');
+            scoreDisplay.classList.add('hidden');
+            let history = JSON.parse(localStorage.getItem('lockin_stats')) || [];
+            
+            let html = `
+                <div class="px-4 py-6 animate-pop">
+                    <h2 class="text-3xl font-black mb-1">Tu Progreso 📈</h2>
+                    <p class="text-slate-500 mb-6 font-semibold">Efectividad general acumulada por materia.</p>
+                    <div class="space-y-4">
+            `;
+
+            if(history.length === 0) {
+                html += `<div class="bg-white p-8 rounded-3xl text-center shadow-sm border border-slate-200">
+                            <span class="text-5xl block mb-4">🤷‍♂️</span>
+                            <p class="text-slate-500 font-bold text-lg">Aún no has completado ninguna prueba.</p>
+                            <p class="text-slate-400 text-sm mt-2">Ve a la pestaña Quiz y ponte a prueba.</p>
+                         </div>`;
+            } else {
+                for (const [key, info] of Object.entries(subjectsInfo)) {
+                    // Filtrar historial de esta materia
+                    let subHistory = history.filter(h => h.subject === key);
+                    if(subHistory.length === 0) continue;
+
+                    let totalQuestions = 0;
+                    let totalCorrect = 0;
+                    subHistory.forEach(s => {
+                        totalQuestions += s.total;
+                        totalCorrect += s.score;
+                    });
+                    
+                    let percentage = Math.round((totalCorrect / totalQuestions) * 100);
+                    let barColor = percentage >= 80 ? 'bg-emerald-500' : (percentage >= 60 ? 'bg-amber-400' : 'bg-rose-500');
+
+                    html += `
+                        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-bold text-slate-700 flex items-center space-x-2 text-lg">
+                                    <span>${info.icon}</span> <span>${info.title}</span>
+                                </span>
+                                <span class="font-black text-xl ${percentage >= 80 ? 'text-emerald-600' : 'text-slate-700'}">${percentage}%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-4">
+                                <div class="${barColor} h-4 rounded-full transition-all duration-1000" style="width: ${percentage}%"></div>
+                            </div>
+                            <p class="text-[11px] font-bold text-slate-400 mt-3 uppercase tracking-wide">
+                                ${totalCorrect} aciertos de ${totalQuestions} respondidas.
+                            </p>
+                        </div>
+                    `;
+                }
+            }
+
+            html += `
+                    <button onclick="clearStats()" class="mt-8 w-full py-4 font-bold text-rose-500 bg-rose-50 rounded-2xl hover:bg-rose-100 transition shadow-sm border border-rose-100">
+                        🗑️ Borrar todo mi progreso
+                    </button>
+                </div>
+            `;
+            appContainer.innerHTML = html;
+        }
+
+        function clearStats() {
+            if(confirm("¿Estás seguro de que quieres borrar todo tu historial de progreso? Esto no se puede deshacer.")) {
+                localStorage.removeItem('lockin_stats');
+                renderStats();
+            }
+        }
+
+        // --- MOTOR DEL QUIZ ---
+        function startQuiz(subject) {
+            currentSubject = subject;
+            
+            // Unir preguntas por defecto y las del usuario
+            let allQ = [...examQuestions, ...userQuestions];
+            
+            // Filtrar y mezclar
+            let rawQuestions = allQ.filter(q => q.s === subject);
+            
+            if (rawQuestions.length === 0) {
+                alert("No hay preguntas en esta materia. ¡Añade algunas primero!");
+                return;
+            }
+            
+            activeQuestions = rawQuestions.sort(() => Math.random() - 0.5);
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.innerHTML = `⭐ 0 / ${activeQuestions.length}`;
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const qData = activeQuestions[currentQuestionIndex];
+            const info = subjectsInfo[currentSubject];
+            
+            let html = `
+                <div class="px-4 py-4 animate-pop flex flex-col h-full min-h-screen">
+                    <div class="mb-4 flex items-center space-x-2">
+                        <span class="text-2xl">${info.icon}</span>
+                        <span class="font-bold text-slate-500 uppercase tracking-widest text-xs">${info.title} - PREGUNTA ${currentQuestionIndex + 1} DE ${activeQuestions.length}</span>
+                    </div>
+                    
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 mb-6 flex-grow flex items-center justify-center">
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-center text-slate-800 leading-snug">${qData.q}</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 mb-6" id="options-container">
+            `;
+
+            // Mantener las opciones estáticas para evitar desajustes
+            qData.o.forEach((opt, index) => {
+                html += `
+                    <button onclick="checkAnswer(${index})" class="btn-option w-full bg-white border-2 border-slate-200 text-slate-700 font-bold py-4 px-5 rounded-2xl text-left text-base shadow-sm hover:border-slate-300">
+                        ${opt}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div id="feedback-container" class="hidden flex-col items-center justify-center p-6 rounded-3xl text-center mb-8 shadow-inner">
+                        <p id="feedback-msg" class="font-black text-2xl mb-2"></p>
+                        <p id="feedback-exp" class="text-sm font-semibold opacity-95 leading-relaxed"></p>
+                        <button onclick="nextQuestion()" class="mt-6 w-full max-w-[200px] bg-white text-slate-900 font-black py-4 px-8 rounded-2xl shadow-lg active:scale-95 transition">
+                            SIGUIENTE ➔
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            appContainer.innerHTML = html;
+            window.scrollTo(0, 0);
+        }
+
+        function checkAnswer(selectedIndex) {
+            const qData = activeQuestions[currentQuestionIndex];
+            const options = document.getElementById('options-container').children;
+            const feedbackContainer = document.getElementById('feedback-container');
+            const feedbackMsg = document.getElementById('feedback-msg');
+            const feedbackExp = document.getElementById('feedback-exp');
+            
+            // Bloquear clics dobles
+            for(let i=0; i<options.length; i++) {
+                options[i].disabled = true;
+                options[i].classList.add('opacity-40');
+            }
+
+            options[qData.c].classList.remove('opacity-40', 'bg-white', 'border-slate-200');
+            options[qData.c].classList.add('correct-answer');
+
+            if (selectedIndex === qData.c) {
+                score++;
+                scoreDisplay.innerHTML = `⭐ ${score} / ${activeQuestions.length}`;
+                feedbackContainer.classList.add('bg-emerald-500', 'text-white', 'animate-pop');
+                feedbackContainer.classList.remove('hidden');
+                feedbackMsg.innerText = "¡CORRECTO! 🔥";
+            } else {
+                options[selectedIndex].classList.remove('opacity-40', 'bg-white', 'border-slate-200');
+                options[selectedIndex].classList.add('wrong-answer');
+                feedbackContainer.classList.add('bg-rose-500', 'text-white', 'animate-pop');
+                feedbackContainer.classList.remove('hidden');
+                feedbackMsg.innerText = "INCORRECTO 💔";
+            }
+            
+            feedbackExp.innerText = qData.e;
+            
+            // Hacer scroll hacia el feedback para que se vea completo en pantallas chicas
+            setTimeout(() => {
+                feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < activeQuestions.length) {
+                renderQuestion();
+            } else {
+                // Guardar estadísticas al terminar
+                saveSessionStat(currentSubject, score, activeQuestions.length);
+                renderResults();
+            }
+        }
+
+        function renderResults() {
+            scoreDisplay.classList.add('hidden');
+            const percentage = Math.round((score / activeQuestions.length) * 100);
+            
+            let msgTitle, msgSub, bgClass, txtClass;
+            
+            if(percentage >= 80) {
+                msgTitle = "¡NIVEL UNAM/IPN! 🚀";
+                msgSub = "Estás listo para asegurar tu lugar. Brutal.";
+                bgClass = "bg-emerald-100 border-emerald-200";
+                txtClass = "text-emerald-600";
+            } else if (percentage >= 60) {
+                msgTitle = "¡BUEN TRABAJO! 📚";
+                msgSub = "Andas cerca del puntaje de corte. Afina los detalles.";
+                bgClass = "bg-amber-100 border-amber-200";
+                txtClass = "text-amber-600";
+            } else {
+                msgTitle = "MODO LOCK IN REQUERIDO 🔒";
+                msgSub = "No te rindas. Usa las explicaciones para aprender de los errores.";
+                bgClass = "bg-rose-100 border-rose-200";
+                txtClass = "text-rose-600";
+            }
+            
+            let html = `
+                <div class="px-4 py-8 flex flex-col items-center justify-center text-center animate-pop h-full min-h-[80vh]">
+                    <div class="text-7xl mb-4">🏆</div>
+                    <h2 class="text-3xl font-black mb-2 text-slate-800">${msgTitle}</h2>
+                    <p class="text-slate-500 font-bold text-sm mb-8 px-4">${msgSub}</p>
+                    
+                    <div class="${bgClass} border-2 rounded-3xl p-8 mb-10 w-full max-w-xs shadow-sm">
+                        <p class="${txtClass} font-bold uppercase tracking-widest text-xs mb-1">Tu Resultado</p>
+                        <p class="text-7xl font-black ${txtClass}">${score}</p>
+                        <p class="${txtClass} font-bold text-sm mt-1">de ${activeQuestions.length} correctas</p>
+                        
+                        <div class="mt-6 pt-4 border-t-2 border-white/50">
+                            <p class="${txtClass} font-black text-2xl">${percentage}% de efectividad</p>
+                        </div>
+                    </div>
+
+                    <div class="w-full max-w-xs space-y-3">
+                        <button onclick="renderStats()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 px-6 rounded-2xl text-lg shadow-xl active:scale-95 transition">
+                            Ver Estadísticas 📈
+                        </button>
+                    </div>
+                </div>
+            `;
+            appContainer.innerHTML = html;
+        }
+
+        // --- CREADOR DE PREGUNTAS ---
+        function renderAddQuestion() {
+            scoreDisplay.classList.add('hidden');
+            let subjOptions = '';
+            for (const [key, info] of Object.entries(subjectsInfo)) {
+                subjOptions += `<option value="${key}">${info.title}</option>`;
+            }
+
+            let html = `
+                <div class="px-4 py-6 animate-pop pb-24">
+                    <div class="flex items-center mb-6">
+                        <button onclick="goHome()" class="mr-4 text-slate-400 hover:text-slate-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        </button>
+                        <h2 class="text-2xl font-black text-slate-800">Crear Pregunta</h2>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div>
+                            <label class="block font-bold text-slate-600 text-sm mb-1">Materia</label>
+                            <select id="new-subj" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-rose-500 transition">
+                                ${subjOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-600 text-sm mb-1">Pregunta (Examen)</label>
+                            <textarea id="new-q" rows="2" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-rose-500 transition" placeholder="Ej: ¿Cuál es la derivada de sen(x)?"></textarea>
+                        </div>
+                        
+                        <!-- Opciones -->
+                        <div class="space-y-3 pt-2">
+                            <label class="block font-bold text-slate-600 text-sm">Opciones (Marca la correcta)</label>
+                            
+                            <div class="flex items-center space-x-3">
+                                <input type="radio" name="correct-opt" value="0" checked class="w-5 h-5 text-rose-600 accent-rose-600">
+                                <input id="opt-0" type="text" class="flex-grow bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:border-rose-500 transition" placeholder="Opción A (Correcta por defecto)">
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="radio" name="correct-opt" value="1" class="w-5 h-5 text-rose-600 accent-rose-600">
+                                <input id="opt-1" type="text" class="flex-grow bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:border-rose-500 transition" placeholder="Opción B">
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="radio" name="correct-opt" value="2" class="w-5 h-5 text-rose-600 accent-rose-600">
+                                <input id="opt-2" type="text" class="flex-grow bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:border-rose-500 transition" placeholder="Opción C">
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <input type="radio" name="correct-opt" value="3" class="w-5 h-5 text-rose-600 accent-rose-600">
+                                <input id="opt-3" type="text" class="flex-grow bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:border-rose-500 transition" placeholder="Opción D">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-600 text-sm mb-1 mt-4">Explicación (Feedback)</label>
+                            <input id="new-exp" type="text" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:border-emerald-500 transition" placeholder="Ej: La regla de derivación indica que...">
+                        </div>
+                    </div>
+
+                    <button onclick="saveQuestion()" class="mt-6 w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 px-6 rounded-2xl text-lg shadow-xl active:scale-95 transition">
+                        Guardar Pregunta
+                    </button>
+                </div>
+            `;
+            appContainer.innerHTML = html;
+            window.scrollTo(0, 0);
+        }
+
+        function saveQuestion() {
+            const subj = document.getElementById('new-subj').value;
+            const q = document.getElementById('new-q').value.trim();
+            const opt0 = document.getElementById('opt-0').value.trim();
+            const opt1 = document.getElementById('opt-1').value.trim();
+            const opt2 = document.getElementById('opt-2').value.trim();
+            const opt3 = document.getElementById('opt-3').value.trim();
+            const exp = document.getElementById('new-exp').value.trim() || "Pregunta personalizada agregada por ti.";
+            const correctRadio = document.querySelector('input[name="correct-opt"]:checked');
+
+            if (!q || !opt0 || !opt1 || !opt2 || !opt3) {
+                alert("Completa la pregunta y las 4 opciones.");
+                return;
+            }
+
+            const newQ = {
+                s: subj,
+                q: q,
+                o: [opt0, opt1, opt2, opt3],
+                c: parseInt(correctRadio.value),
+                e: exp
+            };
+
+            userQuestions.push(newQ);
+            localStorage.setItem('lockin_user_qs', JSON.stringify(userQuestions));
+            
+            alert("¡Pregunta guardada con éxito!");
+            goHome();
+        }
+
+        // Iniciar
+        window.onload = initApp;
+    </script>
+</body>
+</html>
