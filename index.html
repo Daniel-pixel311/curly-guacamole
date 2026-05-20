@@ -13,6 +13,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            startup: { typeset: false }
+        };
+    </script>
+
     <style>
         body {
             font-family: 'Nunito', sans-serif;
@@ -31,6 +40,7 @@
         .tile-quimica { background: linear-gradient(135deg, #059669, #047857); }
         .tile-biologia { background: linear-gradient(135deg, #65a30d, #4d7c0f); }
         .tile-historia { background: linear-gradient(135deg, #d97706, #b45309); }
+        .tile-geografia { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
         .tile-escrita { background: linear-gradient(135deg, #db2777, #be185d); }
         .tile-lectura { background: linear-gradient(135deg, #0891b2, #0e7490); }
 
@@ -38,13 +48,12 @@
         .correct-answer { background-color: #10b981 !important; color: white !important; border-color: #059669 !important; }
         .wrong-answer { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
         
-        /* Ocultar scrollbar */
+        .MathJax { font-size: 1.1em !important; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
 <body class="text-slate-800 h-screen flex flex-col pb-safe">
 
-    <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50 pt-safe">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2 cursor-pointer" onclick="goHome()">
@@ -57,12 +66,10 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="flex-grow max-w-md w-full mx-auto overflow-y-auto mb-16" id="app-container">
-        <!-- Vistas inyectadas por JS -->
+        <!-- Contenido Inyectado -->
     </main>
 
-    <!-- Bottom Navbar -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 pb-safe">
         <div class="max-w-md mx-auto flex justify-around p-3">
             <button onclick="goHome()" class="flex flex-col items-center text-slate-400 hover:text-rose-600 transition" id="nav-quiz">
@@ -76,33 +83,76 @@
         </div>
     </nav>
 
-    <!-- Script Principal -->
+    <!-- Modal Personalizado (Sustituye a alerts y confirms) -->
+    <div id="custom-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-pop">
+            <h3 id="modal-title" class="text-xl font-black text-slate-800 mb-2">Título</h3>
+            <p id="modal-msg" class="text-slate-600 font-semibold text-sm mb-6 leading-relaxed">Mensaje</p>
+            <div id="modal-buttons" class="flex space-x-3">
+                <!-- Botones inyectados por JS -->
+            </div>
+        </div>
+    </div>
+
     <script>
+        // --- SISTEMA DE MODALES (Para Evitar Bloqueos en iOS/PWA) ---
+        function showModal(title, message, type = 'alert', onConfirm = null) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-msg').innerText = message;
+            
+            let btnHtml = '';
+            if (type === 'alert') {
+                btnHtml = `<button onclick="closeModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition active:scale-95">Entendido</button>`;
+            } else if (type === 'confirm') {
+                btnHtml = `
+                    <button onclick="closeModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl transition active:scale-95">Cancelar</button>
+                    <button id="btn-modal-confirm" class="w-1/2 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition active:scale-95">Sí, borrar</button>
+                `;
+            }
+            
+            document.getElementById('modal-buttons').innerHTML = btnHtml;
+            document.getElementById('custom-modal').classList.remove('hidden');
+
+            if (type === 'confirm' && onConfirm) {
+                document.getElementById('btn-modal-confirm').onclick = () => {
+                    onConfirm();
+                    closeModal();
+                };
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // --- MOTOR MATHJAX ---
+        function renderMath() {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetClear(); // Limpia caché visual para evitar errores de redibujado
+                window.MathJax.typesetPromise([document.getElementById('app-container')]).catch((err) => console.log(err.message));
+            }
+        }
+
         // --- MEGA BANCO DE PREGUNTAS (Nivel Examen UNAM/IPN) ---
         const examQuestions = [
-            // MATEMÁTICAS (15)
-            {s:'matematicas', q:"Calcula el límite: lim(x→0) sen(3x) / x", o:["0", "1", "3", "Indeterminado"], c:2, e:"Usando el límite notable lim(x→0) sen(kx)/x = k. Aquí k=3, por lo tanto el límite es 3."},
-            {s:'matematicas', q:"¿Cuál es la derivada de f(x) = ln(x² + 1)?", o:["2x / (x² + 1)", "1 / (x² + 1)", "2x", "x / (x² + 1)"], c:0, e:"Por la regla de la cadena: d/dx[ln(u)] = u'/u. Aquí u = x²+1, entonces u' = 2x. El resultado es 2x/(x²+1)."},
-            {s:'matematicas', q:"Evalúa la integral indefinida ∫(2x + e^x) dx", o:["x² + e^x + C", "2 + e^x + C", "x² + xe^x + C", "x² - e^x + C"], c:0, e:"La integral de 2x es x². La integral de e^x es e^x. Se suma la constante de integración C."},
-            {s:'matematicas', q:"Coordenadas del centro de la circunferencia x² + y² - 6x + 4y - 12 = 0", o:["(-3, 2)", "(3, -2)", "(6, -4)", "(-6, 4)"], c:1, e:"Dividiendo los coeficientes de x e y entre -2. Centro (h,k) = (-D/2, -E/2) = (-(-6)/2, -(4)/2) = (3, -2)."},
-            {s:'matematicas', q:"Simplifica: (x³ - 8) / (x - 2)", o:["x² - 4", "x² + 2x + 4", "x² - 2x + 4", "x² + 4"], c:1, e:"Diferencia de cubos: a³-b³ = (a-b)(a²+ab+b²). x³-8 = (x-2)(x²+2x+4). Al dividir, se cancela (x-2)."},
-            {s:'matematicas', q:"Si f(x) = x² y g(x) = 2x-1, ¿cuál es f(g(x))?", o:["2x² - 1", "4x² - 4x + 1", "4x² - 1", "2x³ - x²"], c:1, e:"Sustituye g(x) dentro de f: (2x-1)². Expandiendo el binomio: 4x² - 4x + 1."},
-            {s:'matematicas', q:"Dominio de la función f(x) = log(x - 3)", o:["x ≥ 3", "x > 0", "x < 3", "x > 3"], c:3, e:"El argumento del logaritmo debe ser estrictamente positivo. x - 3 > 0, por lo que x > 3."},
-            {s:'matematicas', q:"Solución del sistema: 3x - y = 7 y 2x + 3y = 12", o:["x=3, y=2", "x=2, y=-1", "x=4, y=5", "x=1, y=-4"], c:0, e:"Multiplica la 1ra por 3: 9x-3y=21. Sumando con la 2da: 11x = 33 -> x=3. Sustituyendo en la 1ra: 3(3)-y=7 -> y=2."},
-            {s:'matematicas', q:"Si el discriminante (b² - 4ac) de una ecuación cuadrática es menor a 0:", o:["Tiene dos raíces reales iguales", "Tiene dos raíces reales diferentes", "No tiene raíces reales", "Es una recta"], c:2, e:"Si el discriminante es negativo, la ecuación arroja raíces imaginarias/complejas (no reales)."},
-            {s:'matematicas', q:"Pendiente de la recta perpendicular a y = (2/3)x - 5", o:["2/3", "-2/3", "3/2", "-3/2"], c:3, e:"Dos rectas son perpendiculares si el producto de sus pendientes es -1 (son inversas y de signo contrario). Inverso de 2/3 es -3/2."},
-            {s:'matematicas', q:"La expresión sen²(x) + cos²(x) equivale a:", o:["1", "tg(x)", "0", "sec²(x)"], c:0, e:"Identidad pitagórica fundamental de la trigonometría."},
-            {s:'matematicas', q:"¿Cuál es la distancia entre los puntos A(-2, 3) y B(1, -1)?", o:["4", "5", "7", "25"], c:1, e:"Fórmula de distancia: d = √[(1 - (-2))² + (-1 - 3)²] = √[3² + (-4)²] = √[9 + 16] = √25 = 5."},
-            {s:'matematicas', q:"Resuelve la desigualdad: |2x - 1| < 5", o:["-3 < x < 3", "-2 < x < 3", "x < 3", "x > -2"], c:1, e:"Propiedad del valor absoluto: -5 < 2x - 1 < 5. Sumas 1 a todo: -4 < 2x < 6. Divides entre 2: -2 < x < 3."},
-            {s:'matematicas', q:"Una matriz A tiene dimensión 2x3 y B es 3x4. ¿Dimensión de A*B?", o:["2x4", "3x3", "No se puede multiplicar", "2x3"], c:0, e:"Los números internos coinciden (3 y 3). La matriz resultante hereda las filas de A y columnas de B (2x4)."},
-            {s:'matematicas', q:"Probabilidad de obtener al menos un águila al lanzar 2 monedas:", o:["1/4", "1/2", "3/4", "1"], c:2, e:"Espacio muestral: AA, AS, SA, SS. En tres casos hay al menos un águila (AA, AS, SA). Prob. = 3/4."},
-            {s:'matematicas', q:"Calcula: 5 + 3 × 2", o:["16", "11", "20", "10"], c:1, e:"Por jerarquía de operaciones, primero se multiplica (3 × 2 = 6) y luego se suma (5 + 6 = 11)."},
-            {s:'matematicas', q:"Resuelve para x: 3x - 7 = 14", o:["7", "21", "10", "4"], c:0, e:"Pasas el 7 sumando: 3x = 21. Divides entre 3: x = 7."},
-            {s:'matematicas', q:"Convierte 0.75 a fracción irreducible:", o:["3/4", "75/100", "1/4", "4/3"], c:0, e:"0.75 equivale a 75/100. Dividiendo ambos entre 25, obtenemos 3/4."},
-            {s:'matematicas', q:"¿Cuál es el área de un triángulo de base 6m y altura 4m?", o:["24 m²", "10 m²", "12 m²", "20 m²"], c:2, e:"La fórmula es (base × altura) / 2. (6 × 4) / 2 = 24 / 2 = 12 m²."},
-            {s:'matematicas', q:"Simplifica: (x³)²", o:["x⁵", "x⁶", "x⁹", "x"], c:1, e:"Al elevar una potencia a otra potencia, los exponentes se multiplican: 3 × 2 = 6."},
-
-            // FÍSICA (15)
+            // MATEMÁTICAS 
+            {s:'matematicas', q:"¿Cuál es el número que se encuentra en la sexta posición de la sucesión: $\\frac{5}{2}, \\frac{1}{2}, -\\frac{3}{2}, -\\frac{7}{2}, ...$?", o:["$-\\frac{15}{2}$", "$-\\frac{11}{2}$", "$\\frac{11}{2}$", "$-\\frac{9}{2}$"], c:0, e:"La diferencia de la progresión es -2. Restando -2 repetidamente llegamos a -15/2 en la sexta posición."},
+            {s:'matematicas', q:"Descomponer en factores la expresión: $6ac + 2ad - 3bc - bd$", o:["$(2a-b)(3c+d)$", "$(2a+b)(3c+d)$", "$(2a-b)(3c-d)$", "$(2a+b)(3c-d)$"], c:0, e:"Agrupando: $2a(3c+d) - b(3c+d)$. Factorizando el término común resulta en $(2a-b)(3c+d)$."},
+            {s:'matematicas', q:"Identificar el sistema de ecuaciones lineales que tiene por solución $y=-1, x=3$", o:["$4x+2y=10 \\quad ; \\quad 2x+4y=2$", "$-2x+4y=10 \\quad ; \\quad 4x-2y=2$", "$4x+2y=2 \\quad ; \\quad 4x-2y=10$", "$4x-2y=2 \\quad ; \\quad 2x+4y=10$"], c:0, e:"Sustituyendo en la opción A: $4(3)+2(-1) = 12-2=10$ y $2(3)+4(-1) = 6-4=2$. Ambas se cumplen."},
+            {s:'matematicas', q:"Determinar el intervalo solución de la desigualdad: $-3 < \\frac{4x-7}{6} < 9$", o:["$(-\\frac{11}{3},\\frac{61}{3})$", "$(-\\frac{11}{4},\\frac{61}{4})$", "$(-\\frac{13}{3},\\frac{61}{3})$", "$(-\\frac{13}{4},\\frac{61}{4})$"], c:1, e:"Multiplicamos por 6: $-18 < 4x-7 < 54$. Sumamos 7: $-11 < 4x < 61$. Dividimos entre 4: $-11/4 < x < 61/4$."},
+            {s:'matematicas', q:"Las calificaciones de Biología son: 6.0, 7.0, 8.0, 7.0, 6.0, 8.0, 4.0, 7.0, 6.0, 7.0. ¿Cuál es la moda?", o:["6.5", "7.0", "6.0", "7.5"], c:1, e:"La moda es el valor que más se repite. El 7.0 aparece 4 veces, más que cualquier otro número."},
+            {s:'matematicas', q:"El salario de un trabajador es proporcional a su edad. Si actualmente tiene 21 años, ¿dentro de cuántos años triplicará su salario?", o:["14", "21", "42", "63"], c:2, e:"Si es proporcional, para triplicar el salario debe triplicar su edad (63 años). $63 - 21 = 42$ años en el futuro."},
+            {s:'matematicas', q:"Determinar el valor de la integral definida: $\\int_{1}^{3}(x^3 - 2x)dx$", o:["20", "28", "36", "12"], c:3, e:"Antiderivada: $\\frac{x^4}{4} - x^2$. Evaluada en 3 da $45/4$. Evaluada en 1 da $-3/4$. Su diferencia es $48/4 = 12$."},
+            {s:'matematicas', q:"El producto de $(\\frac{7p}{9}-1)$ por $(\\frac{9p}{14}+2)$ es igual a:", o:["$\\frac{p^2}{2}+\\frac{32}{63}p-2$", "$\\frac{p^2}{2}-\\frac{115}{126}p-2$", "$\\frac{p^2}{2}+\\frac{115}{126}p-2$", "$\\frac{p^2}{3}-\\frac{32}{63}p-2$"], c:2, e:"Multiplicando término a término y simplificando las fracciones se obtiene el trinomio indicado."},
+            {s:'matematicas', q:"Simplificar la expresión matemática: $(x+4)(x^2+4x+16) - (x-4)(x^2-4x+16)$", o:["$16x^2$", "$8x^2-128$", "128", "$16x^2+128$"], c:3, e:"Al desarrollar ambos productos y restar el segundo del primero, los términos cúbicos se cancelan, resultando en $16x^2+128$."},
+            {s:'matematicas', q:"Calcular el valor del límite: $\\lim_{x\\rightarrow0}\\frac{x}{\\sin 4x}$", o:["16", "$\\frac{1}{16}$", "$\\frac{1}{4}$", "4"], c:2, e:"Usando el límite notable $\\lim_{x\\rightarrow0} \\frac{x}{\\sin(kx)} = \\frac{1}{k}$. En este caso $k=4$, por lo que es $1/4$."},
+            {s:'matematicas', q:"Dentro de 8 años, la edad de Jonathan será el doble de la de Alfredo. ¿Cuál es su edad actual si hace 3 años era el triple de la de Alfredo?", o:["14 años", "18 años", "7 años", "36 años"], c:3, e:"Planteando el sistema: $J+8 = 2(A+8)$ y $J-3 = 3(A-3)$. Resolviendo, A = 14 y J = 36."},
+            {s:'matematicas', q:"Factorizar la expresión: $6a^3bc^5 - 9a^2b^5c + 5ab^4c^3$", o:["$abc(6a^2c^4 - 9ab^4 + 5b^3c^2)$", "$abc(6a^2c^4 - 9ab^4 + 5b^4c^3)$", "$abc(6a^3c^4 - 9ab^5 + 5b^3c^2)$", "$abc(6a^2c^4 - 9ab^5 + 5b^3c^2)$"], c:0, e:"El factor común es $abc$. Al dividir cada término entre $abc$ se obtienen los coeficientes y exponentes correspondientes."},
+            {s:'matematicas', q:"En un grupo de 22 trabajadores se graficaron sus edades. El pico de la gráfica está en los 47 años. ¿Cuáles son la mediana y la moda?", o:["47 y 57", "35 y 42", "35 y 47", "47 y 47"], c:3, e:"La moda es la frecuencia más alta (47 años). Al ser 22 datos, la mediana cae entre las posiciones 11 y 12, que también corresponden a la edad de 47 años."},
+            {s:'matematicas', q:"Resolver la integral: $\\int 4 \\ln x \\, dx$", o:["$4x \\ln x - x + C$", "$4x \\ln x - 4x + C$", "$4x \\ln x + 4x + C$", "$x \\ln 4x - x + C$"], c:1, e:"Por integración por partes (u = ln x, dv = dx), la integral de ln(x) es x ln(x) - x. Multiplicado por 4 nos da la opción correcta."},
+            {s:'matematicas', q:"Calcular la integral indefinida: $\\int \\sin x \\cos x \\, dx$", o:["$\\frac{1}{4}\\sin^2 x + C$", "$2\\sin^2 x + C$", "$-\\frac{1}{2}\\sin^2 x + C$", "$\\frac{1}{2}\\sin^2 x + C$"], c:3, e:"Sustitución simple: Si $u = \\sin x$, entonces $du = \\cos x \\, dx$. $\\int u \\, du = \\frac{u^2}{2} = \\frac{1}{2}\\sin^2 x + C$."},
+            
+            // FÍSICA
             {s:'fisica', q:"Si la distancia entre dos masas se reduce a la mitad, la fuerza gravitacional entre ellas:", o:["Se reduce a la mitad", "Se duplica", "Se cuadruplica", "No cambia"], c:2, e:"Fórmula: F = G(m1m2)/r². Si 'r' se divide entre 2, su cuadrado divide entre 4. Por ley de sándwich, la fuerza se multiplica por 4."},
             {s:'fisica', q:"Unidad de la potencia eléctrica en el Sistema Internacional:", o:["Voltio", "Amperio", "Joule", "Watt"], c:3, e:"La potencia (rapidez con la que se transfiere energía) se mide en Joules/segundo, que equivale a Watts."},
             {s:'fisica', q:"La energía cinética de un cuerpo depende directamente de:", o:["Su masa y su altura", "Su masa y el cuadrado de su velocidad", "Su peso y su aceleración", "Su densidad y volumen"], c:1, e:"Fórmula de la energía cinética: Ec = (1/2) * m * v². Depende de la masa y el cuadrado de la velocidad."},
@@ -119,7 +169,7 @@
             {s:'fisica', q:"Cambio aparente en la frecuencia de una onda debido al movimiento relativo entre la fuente y el observador:", o:["Efecto Compton", "Efecto Fotoeléctrico", "Efecto Doppler", "Difracción"], c:2, e:"El Efecto Doppler explica por qué la sirena de una ambulancia cambia de tono al acercarse y alejarse."},
             {s:'fisica', q:"¿A cuántos grados Kelvin equivalen 20 °C?", o:["253.15 K", "273.15 K", "293.15 K", "313.15 K"], c:2, e:"Fórmula: K = °C + 273.15. Por lo tanto, 20 + 273.15 = 293.15 K."},
 
-            // QUÍMICA (15)
+            // QUÍMICA 
             {s:'quimica', q:"Partícula subatómica responsable de la formación de enlaces químicos:", o:["Neutrón", "Protón", "Positrón", "Electrón de valencia"], c:3, e:"Los electrones de la capa más externa (valencia) son los que se comparten o ceden para formar enlaces."},
             {s:'quimica', q:"Número cuántico principal 'n' determina:", o:["La forma del orbital", "El nivel de energía y tamaño", "La orientación espacial", "El espín del electrón"], c:1, e:"El número 'n' (1, 2, 3...) indica el nivel energético y la distancia promedio del núcleo (tamaño)."},
             {s:'quimica', q:"¿Cuántos moles hay en 36 gramos de agua (H₂O)?", o:["1 mol", "2 moles", "3 moles", "0.5 moles"], c:1, e:"Masa molar H₂O = (2x1) + 16 = 18 g/mol. Moles = Masa / Masa molar = 36 / 18 = 2 moles."},
@@ -136,24 +186,24 @@
             {s:'quimica', q:"¿Qué tipo de enlace se presenta en la molécula de O₂?", o:["Iónico", "Covalente polar", "Covalente no polar", "Puente de hidrógeno"], c:2, e:"Al unirse dos átomos del mismo elemento, la diferencia de electronegatividad es 0, los electrones se comparten equitativamente (no polar)."},
             {s:'quimica', q:"Isótopos son átomos del mismo elemento que difieren en el número de:", o:["Protones", "Electrones", "Neutrones", "Niveles de energía"], c:2, e:"Tienen el mismo número atómico (protones) pero diferente masa debido a una cantidad variable de neutrones."},
 
-            // BIOLOGÍA (15)
-            {s:'biologia', q:"Proceso metabólico mediante el cual se degrada la glucosa hasta piruvato generando 2 ATP netos:", o:["Ciclo de Krebs", "Glucólisis", "Cadena respiratoria", "Fermentación"], c:1, e:"La glucólisis ocurre en el citoplasma y es el primer paso tanto en respiración aerobia como anaerobia."},
-            {s:'biologia', q:"En el dogma central de la biología, la transcripción consiste en:", o:["Copiar ADN a ADN", "Traducir ARN a Proteína", "Crear ARNm a partir de un molde de ADN", "Replicar ribosomas"], c:2, e:"Transcripción es 'reescribir' el código genético del ADN a ARN mensajero (ARNm) para que pueda salir del núcleo."},
-            {s:'biologia', q:"Tipo de transporte celular que requiere gasto de energía (ATP):", o:["Ósmosis", "Difusión facilitada", "Transporte activo", "Difusión simple"], c:2, e:"El transporte activo mueve sustancias en contra del gradiente de concentración, por lo que necesita invertir ATP (ej. Bomba de Sodio-Potasio)."},
-            {s:'biologia', q:"Postulado de Darwin y Wallace sobre la evolución:", o:["Uso y desuso de órganos", "Herencia de caracteres adquiridos", "Selección natural", "Generación espontánea"], c:2, e:"Establece que los individuos mejor adaptados a su entorno tienen más probabilidades de sobrevivir y reproducirse."},
-            {s:'biologia', q:"La fase luminosa de la fotosíntesis ocurre en:", o:["Estroma del cloroplasto", "Matriz mitocondrial", "Membrana celular", "Tilacoides del cloroplasto"], c:3, e:"En los tilacoides están los pigmentos fotosintéticos (clorofila) que captan la luz para generar ATP y NADPH."},
-            {s:'biologia', q:"Cruza un chícharo homocigoto dominante (AA) con un homocigoto recesivo (aa). Genotipo de la F1:", o:["100% Aa", "50% AA, 50% aa", "100% AA", "75% Aa, 25% aa"], c:0, e:"La primera generación (F1) hereda un alelo dominante 'A' y uno recesivo 'a', resultando en descendencia 100% heterocigota (Aa)."},
-            {s:'biologia', q:"Base nitrogenada presente en el ARN pero ausente en el ADN:", o:["Timina", "Guanina", "Citosina", "Uracilo"], c:3, e:"En el ARN, el Uracilo (U) reemplaza a la Timina (T) uniéndose con la Adenina (A)."},
-            {s:'biologia', q:"La mitosis produce ___ células hijas con ___ de cromosomas que la célula madre.", o:["4, la mitad", "2, el mismo número", "2, el doble", "4, el mismo número"], c:1, e:"Mitosis es división de células somáticas. Genera 2 células idénticas (diploides, igual número cromosómico)."},
-            {s:'biologia', q:"Relación simbiótica donde un organismo se beneficia y el otro no se afecta ni beneficia:", o:["Parasitismo", "Mutualismo", "Comensalismo", "Depredación"], c:2, e:"En el comensalismo, uno gana y al otro le da igual (ej. las rémoras nadando junto al tiburón)."},
-            {s:'biologia', q:"El reino que agrupa organismos procariotas (como las bacterias) es:", o:["Fungi", "Protista", "Monera", "Plantae"], c:2, e:"El Reino Monera es el único constituido exclusivamente por organismos procariotas unicelulares (sin núcleo verdadero)."},
-            {s:'biologia', q:"¿Cuál es la función principal de los ribosomas?", o:["Almacenar ADN", "Digestión celular", "Síntesis de proteínas", "Producción de lípidos"], c:2, e:"Los ribosomas 'leen' el ARN mensajero y ensamblan aminoácidos para sintetizar proteínas."},
-            {s:'biologia', q:"Etapa de la respiración aerobia que produce la mayor cantidad de ATP:", o:["Glucólisis", "Ciclo de Krebs", "Fase oscura", "Cadena transportadora de electrones"], c:3, e:"La cadena transportadora de electrones (junto con la quimiósmosis) genera aproximadamente 32-34 ATP por molécula de glucosa."},
-            {s:'biologia', q:"Mecanismo de especiación que ocurre por aislamiento geográfico:", o:["Especiación simpátrica", "Especiación alopátrica", "Selección artificial", "Deriva génica"], c:1, e:"'Alos' significa 'otro' y 'patria' lugar. Una barrera física separa la población y evolucionan distinto."},
-            {s:'biologia', q:"Organismo autotrófo base de la cadena alimenticia en ecosistemas terrestres:", o:["Consumidores primarios", "Descomponedores", "Productores", "Depredadores tope"], c:2, e:"Las plantas y otros autotrófos fotosintéticos producen la materia orgánica inicial de la red trófica."},
-            {s:'biologia', q:"Componente estructural primario de la pared celular de las plantas:", o:["Quitina", "Glucógeno", "Colágeno", "Celulosa"], c:3, e:"La celulosa es un polisacárido que otorga rigidez y soporte a las paredes celulares vegetales."},
+            // BIOLOGÍA - NUEVAS (Del PDF subido)
+            {s:'biologia', q:"Científico que en 1665 acuñó el nombre de 'célula' tras observar cortes de corcho en un microscopio:", o:["Theodor Schwann", "Robert Brown", "Robert Hooke", "Charles Darwin"], c:2, e:"Robert Hooke observó cavidades en el corcho que le recordaron a las celdillas de los monjes, llamándolas 'células'."},
+            {s:'biologia', q:"Postulado de la Teoría Celular que afirma que 'Toda célula proviene de otra preexistente' (Omnis cellula e cellula):", o:["Rudolf Virchow", "Louis Pasteur", "Robert Hooke", "James Watson"], c:0, e:"Virchow completó la teoría celular de Schleiden y Schwann con este crucial postulado sobre la división celular."},
+            {s:'biologia', q:"Los carbohidratos, como la glucosa, son fundamentales para la vida terrestre principalmente porque:", o:["Son fáciles de conseguir en la naturaleza", "La energía de sus enlaces proporciona gran parte de la energía vital", "Son producidos por animales pluricelulares", "Poseen un sabor dulce indispensable"], c:1, e:"Los enlaces químicos de los carbohidratos se rompen durante la respiración celular para liberar energía inmediata (ATP)."},
+            {s:'biologia', q:"Es considerada la molécula universal altamente almacenadora de energía (la 'moneda energética' celular):", o:["ADN", "Clorofila", "Hemoglobina", "ATP"], c:3, e:"El Trifosfato de Adenosina (ATP) transfiere la energía química necesaria para las funciones celulares."},
+            {s:'biologia', q:"Órgano celular de las plantas, provisto de doble membrana, donde se lleva a cabo la fotosíntesis:", o:["Centrosomas", "Mitocondrias", "Cloroplastos", "Vacuolas"], c:2, e:"Los cloroplastos contienen clorofila, el pigmento capaz de captar la luz solar para sintetizar glucosa."},
+            {s:'biologia', q:"Secuencia correcta de las fases de la división celular (Mitosis):", o:["Interfase, profase, anafase, metafase", "Profase, metafase, anafase, telofase", "Telofase, profase, anafase, metafase", "Anafase, profase, telofase, metafase"], c:1, e:"La mnemotecnia común es 'Promete Ana Tejer': Profase, Metafase, Anafase, Telofase."},
+            {s:'biologia', q:"Ciertas plantas de los trópicos (epífitas) viven sobre otras de mayor altura para captar luz solar, sin causarles daño. Es un ejemplo de:", o:["Parasitismo", "Mutualismo", "Comensalismo", "Depredación"], c:2, e:"En el comensalismo, una especie se beneficia (capta más luz) y la otra no sufre daño ni beneficio significativo."},
+            {s:'biologia', q:"Un insecto como la 'Mantis religiosa' que modifica su aspecto para parecerse a una rama y obtener alimento, ilustra un ejemplo de:", o:["Mutualismo", "Comensalismo", "Mimetismo", "Simbiosis obligada"], c:2, e:"El mimetismo y la coloración disimulada son adaptaciones morfológicas para el camuflaje."},
+            {s:'biologia', q:"Un cerdo que alberga en su interior gusanos como el Ascaris o la Trichinella está participando en una relación de:", o:["Endoparásitos", "Mutualismo", "Ectoparásitos", "Simbiosis"], c:0, e:"Al habitar en el interior del huésped (el cerdo) y causarle daño para alimentarse, se clasifican como endoparásitos."},
+            {s:'biologia', q:"Dominio taxonómico propuesto por Carl Woese que agrupa a procariotas adaptados a condiciones extremas (alta salinidad, calor térmico):", o:["Eukarya", "Archaea", "Fungi", "Monera"], c:1, e:"Las Arqueobacterias (Archaea) son organismos microscópicos distintos a las bacterias clásicas, famosos por ser extremófilos."},
+            {s:'biologia', q:"En la estructura de doble hélice del ADN humano, la Adenina se une siempre por dos puentes de hidrógeno con la:", o:["Citosina", "Guanina", "Timina", "Uracilo"], c:2, e:"Según la regla de Chargaff: la Adenina se une con Timina (A-T) y la Guanina con Citosina (G-C)."},
+            {s:'biologia', q:"Autor principal de la teoría de la evolución basada en la Selección Natural:", o:["Jean-Baptiste Lamarck", "Gregor Mendel", "Charles Darwin", "Thomas Morgan"], c:2, e:"Charles Darwin (junto a Wallace) propuso que el entorno ejerce presiones que seleccionan a los individuos mejor adaptados."},
+            {s:'biologia', q:"Vía metabólica que ocurre en el citoplasma y degrada la glucosa en dos moléculas de piruvato sin usar oxígeno:", o:["Ciclo de Krebs", "Glucólisis", "Fosforilación oxidativa", "Ciclo de Calvin"], c:1, e:"La glucólisis es la fase inicial tanto de la respiración celular aerobia como de la fermentación anaerobia."},
+            {s:'biologia', q:"¿Cuál de los siguientes NO es un postulado de la teoría celular clásica?", o:["Todos los seres vivos están formados por células", "La célula es la unidad fisiológica de la vida", "Toda célula posee un núcleo definido por membrana", "Toda célula proviene de otra preexistente"], c:2, e:"Las células procariotas (como las bacterias) NO poseen un núcleo definido por membrana, por lo tanto, no es un postulado universal."},
+            {s:'biologia', q:"Nivel de organización que agrupa a un conjunto de individuos de la MISMA especie que habitan una misma área:", o:["Comunidad", "Bioma", "Ecosistema", "Población"], c:3, e:"Una población se refiere estrictamente a miembros de una misma especie interactuando en un lugar."},
 
-            // HISTORIA (15)
+            // HISTORIA 
             {s:'historia', q:"Tratado que dio fin oficial a la Primera Guerra Mundial e impuso duras sanciones a Alemania:", o:["Tratado de Versalles", "Tratado de Tordesillas", "Tratado de Yalta", "Pacto de Varsovia"], c:0, e:"Firmado en 1919, desmanteló el ejército alemán e impuso deudas impagables, sentando las bases de la 2da Guerra."},
             {s:'historia', q:"Periodo de México en el que Plutarco Elías Calles controló la presidencia sin ser el presidente en turno:", o:["Porfiriato", "Reforma", "El Maximato", "Guerra Cristera"], c:2, e:"Calles se autoproclamó 'Jefe Máximo de la Revolución' y controló a tres presidentes (1928-1934)."},
             {s:'historia', q:"Causa inmediata del inicio de la Segunda Guerra Mundial en 1939:", o:["Asesinato del Archiduque Francisco Fernando", "Bombardeo a Pearl Harbor", "Invasión de Alemania a Polonia", "Guerra Civil Española"], c:2, e:"La invasión de Polonia (1 septiembre 1939) provocó que Francia y Gran Bretaña declararan la guerra a la Alemania nazi."},
@@ -170,7 +220,24 @@
             {s:'historia', q:"Movimiento filosófico del siglo XVIII que impulsó el uso de la razón y el conocimiento científico:", o:["Renacimiento", "Romanticismo", "La Ilustración", "Positivismo"], c:2, e:"La Ilustración, o 'Siglo de las Luces', cuestionó el poder monárquico y religioso, fundamentando las revoluciones burguesas."},
             {s:'historia', q:"Etapa de tensión política mundial donde hubo carrera armamentista y conquista espacial sin enfrentamiento bélico directo:", o:["Paz Armada", "Guerra Fría", "Imperialismo", "Guerra de los Balcanes"], c:1, e:"La Guerra Fría (1947-1991) enfrentó indirectamente al bloque capitalista y comunista en escenarios periféricos y tecnológicos."},
 
-            // COMPRENSIÓN ESCRITA (ESPAÑOL) (15)
+            // GEOGRAFÍA 
+            {s:'geografia', q:"¿Qué país se formó en Europa tras la violenta desintegración de Yugoslavia en la década de los 90?", o:["Ucrania", "Croacia", "Polonia", "Checoslovaquia"], c:1, e:"Yugoslavia se fragmentó en varios países: Croacia, Serbia, Eslovenia, Bosnia, Macedonia y Montenegro."},
+            {s:'geografia', q:"Las costas de los estados de Tamaulipas, Veracruz y Tabasco son bañadas por las aguas de:", o:["El Océano Pacífico", "El Mar Caribe", "El Golfo de México", "El Golfo de California"], c:2, e:"Estos estados conforman la principal llanura costera del oriente de México hacia el Golfo de México."},
+            {s:'geografia', q:"Tipo de clima predominante en la Península de Yucatán, de acuerdo con el sistema de Köppen:", o:["Seco desértico", "Templado con lluvias en invierno", "Cálido subhúmedo con lluvias en verano", "Polar de Tundra"], c:2, e:"La península es tropical, cálida y recibe fuertes lluvias durante el verano y el paso de huracanes."},
+            {s:'geografia', q:"Río que sirve como límite natural en la frontera sur entre México y Belice:", o:["Río Usumacinta", "Río Bravo", "Río Hondo", "Río Suchiate"], c:2, e:"El río Hondo define la frontera con Belice, mientras que el Suchiate y el Usumacinta lo hacen con Guatemala."},
+            {s:'geografia', q:"Actividad económica principal que se desarrolla en la sonda de Campeche y Tabasco:", o:["Agricultura de exportación", "Pesca comercial", "Extracción petrolera", "Turismo ecológico"], c:2, e:"Esta zona marina es la región petrolera más importante y productiva de México (ej. Complejo Cantarell)."},
+            {s:'geografia', q:"Placas tectónicas responsables de la alta sismicidad en la costa sur y centro de México:", o:["Placa del Pacífico y Nazca", "Placa de Cocos y Norteamericana", "Placa del Caribe y Cocos", "Placa Norteamericana y Euroasiática"], c:1, e:"La placa de Cocos (oceánica) subduce por debajo de la placa Norteamericana (continental), generando los sismos en México."},
+            {s:'geografia', q:"Mineral metálico del cual México ha sido históricamente el primer productor a nivel mundial:", o:["Oro", "Cobre", "Plata", "Hierro"], c:2, e:"Zacatecas, Chihuahua y Durango mantienen a México como líder mundial en producción de plata."},
+            {s:'geografia', q:"Proyección cartográfica cilíndrica que conserva las formas pero distorsiona enormemente el tamaño hacia los polos:", o:["Proyección de Peters", "Proyección de Mercator", "Proyección Cónica", "Proyección Azimutal"], c:1, e:"Diseñada en 1569 para la navegación. Hace que Groenlandia parezca del tamaño de África (cuando es 14 veces más pequeña)."},
+            {s:'geografia', q:"País con la mayor población absoluta del mundo en la actualidad:", o:["Estados Unidos", "China", "India", "Rusia"], c:2, e:"Recientemente, India superó a China como el país más poblado del planeta con más de 1,400 millones de habitantes."},
+            {s:'geografia', q:"Movimiento de la Tierra que, combinado con la inclinación del eje terrestre, origina las estaciones del año:", o:["Rotación", "Nutación", "Traslación", "Precesión"], c:2, e:"La traslación (órbita alrededor del sol en 365 días) expone a los hemisferios a diferente radiación según la época del año."},
+            {s:'geografia', q:"Continente que presenta la mayor tasa de crecimiento demográfico y natalidad del mundo:", o:["Asia", "América Latina", "África", "Oceanía"], c:2, e:"África tiene la población más joven y las tasas de fecundidad más altas del planeta."},
+            {s:'geografia', q:"Organización y tratado internacional vigente para el libre comercio entre México, EE.UU. y Canadá:", o:["TLCAN (NAFTA)", "T-MEC", "Mercosur", "Alianza del Pacífico"], c:1, e:"El Tratado entre México, Estados Unidos y Canadá (T-MEC) reemplazó al antiguo TLCAN en 2020."},
+            {s:'geografia', q:"Estado de la República Mexicana caracterizado por tener la mayor diversidad lingüística, cultural y biológica:", o:["Chiapas", "Yucatán", "Michoacán", "Oaxaca"], c:3, e:"Oaxaca es el estado con mayor número de etnias (zapotecos, mixtecos, etc.) y una orografía que fomenta gran biodiversidad."},
+            {s:'geografia', q:"La cordillera de los Andes, la más larga del mundo, se localiza en:", o:["América del Sur", "Asia Central", "Norteamérica", "Europa Oriental"], c:0, e:"Recorre toda la costa occidental de Sudamérica, atravesando países como Chile, Perú, Ecuador y Colombia."},
+            {s:'geografia', q:"Fenómeno climático que causa un calentamiento anómalo en las aguas del Océano Pacífico Ecuatorial, alterando el clima global:", o:["Efecto Invernadero", "La Niña", "El Niño", "Cambio Climático"], c:2, e:"El Niño (ENSO) calienta el Pacífico, causando sequías en unas regiones e inundaciones severas en otras."},
+
+            // COMPRENSIÓN ESCRITA (ESPAÑOL)
             {s:'escrita', q:"Identifica la oración con concordancia correcta:", o:["Hubieron muchas personas en la fiesta.", "Hubo muchas personas en la fiesta.", "Habían varias personas en la fiesta.", "Han habidos personas en la fiesta."], c:1, e:"El verbo 'haber' es impersonal cuando indica existencia; siempre se conjuga en tercera persona singular (hubo, había)."},
             {s:'escrita', q:"Función de la lengua que busca convencer, persuadir o influir en el receptor:", o:["Función referencial", "Función poética", "Función fática", "Función apelativa"], c:3, e:"La función apelativa o conativa se centra en el receptor, usada comúnmente en discursos políticos y publicidad."},
             {s:'escrita', q:"Elige el nexo coordinante adversativo en la oración: 'Estudió mucho, ___ no aprobó el examen'.", o:["porque", "así que", "pero", "y"], c:2, e:"Los nexos adversativos oponen ideas (pero, mas, sin embargo, sino)."},
@@ -187,7 +254,7 @@
             {s:'escrita', q:"¿Cuál de estas oraciones es compuesta coordinada copulativa?", o:["Te llamé pero no respondiste.", "Iré al cine y comeré palomitas.", "Estudias o trabajas.", "Dijo que vendría pronto."], c:1, e:"Las copulativas unen información sumando elementos usando los nexos: y, e, ni."},
             {s:'escrita', q:"Signo de puntuación que separa oraciones independientes que tienen relación de sentido:", o:["Coma", "Punto y seguido", "Punto y coma", "Dos puntos"], c:2, e:"El punto y coma (;) establece una pausa mayor que la coma y menor que el punto, usada para enlazar oraciones estrechamente relacionadas."},
 
-            // LECTURA / LITERATURA (15)
+            // LECTURA / LITERATURA 
             {s:'lectura', q:"Corriente literaria del siglo XIX que busca reflejar la realidad social de forma objetiva, cruda y descriptiva:", o:["Romanticismo", "Realismo", "Vanguardismo", "Modernismo"], c:1, e:"El Realismo se opone a los excesos sentimentales del Romanticismo, enfocándose en problemas sociales de la clase media/baja."},
             {s:'lectura', q:"Premisa 1: Todos los planetas giran alrededor del sol. Premisa 2: Marte es un planeta. Conclusión deductiva:", o:["El sol gira alrededor de Marte.", "Marte gira alrededor del sol.", "Algunos planetas son como Marte.", "Marte no gira alrededor del sol."], c:1, e:"Es un silogismo deductivo básico: lo que aplica a la totalidad aplica al individuo (Marte)."},
             {s:'lectura', q:"Identifica el género literario en el que el autor expresa de forma subjetiva sus sentimientos íntimos (ej. Odas, Sonetos):", o:["Épico", "Lírico", "Dramático", "Didáctico"], c:1, e:"El género lírico (poesía) transmite emociones y sentimientos, originado por los griegos al recitar versos con una lira."},
@@ -218,6 +285,7 @@
             'quimica': { title: 'Química', colorClass: 'tile-quimica', icon: '🧪' },
             'biologia': { title: 'Biología', colorClass: 'tile-biologia', icon: '🧬' },
             'historia': { title: 'Historia', colorClass: 'tile-historia', icon: '🏛️' },
+            'geografia': { title: 'Geografía', colorClass: 'tile-geografia', icon: '🌍' },
             'escrita': { title: 'Español (Escrita)', colorClass: 'tile-escrita', icon: '✍️' },
             'lectura': { title: 'Lectura/Lit.', colorClass: 'tile-lectura', icon: '📖' }
         };
@@ -248,20 +316,17 @@
             setActiveNav('quiz');
             scoreDisplay.classList.add('hidden');
             
-            // Unimos las preguntas base y las del usuario para contar el total real
             let allQ = [...examQuestions, ...userQuestions];
             
             let html = `
-                <div class="px-4 py-6 animate-pop">
-                    <h2 class="text-3xl font-black mb-1">Simulador IPN/UNAM</h2>
+                <div class="px-4 py-6 animate-pop pb-20">
+                    <h2 class="text-3xl font-black mb-1">Simulador UNAM/IPN</h2>
                     <p class="text-slate-500 mb-6 font-semibold">Selecciona el módulo a entrenar:</p>
                     <div class="grid grid-cols-2 gap-4">
             `;
 
             for (const [key, info] of Object.entries(subjectsInfo)) {
-                // Contar reactivos disponibles por materia
                 let qCount = allQ.filter(q => q.s === key).length;
-                
                 html += `
                     <div onclick="startQuiz('${key}')" class="rounded-3xl p-5 shadow-lg text-white cursor-pointer transform transition active:scale-95 ${info.colorClass}">
                         <div class="text-4xl mb-3">${info.icon}</div>
@@ -271,7 +336,6 @@
                 `;
             }
 
-            // Botón Agregar Pregunta
             html += `
                     <div onclick="renderAddQuestion()" class="rounded-3xl p-5 shadow-sm text-slate-600 bg-slate-200 cursor-pointer transform transition active:scale-95 flex flex-col justify-center items-center border-2 border-dashed border-slate-400 hover:bg-slate-300">
                         <div class="text-3xl mb-2">➕</div>
@@ -301,7 +365,7 @@
             let history = JSON.parse(localStorage.getItem('lockin_stats')) || [];
             
             let html = `
-                <div class="px-4 py-6 animate-pop">
+                <div class="px-4 py-6 animate-pop pb-20">
                     <h2 class="text-3xl font-black mb-1">Tu Progreso 📈</h2>
                     <p class="text-slate-500 mb-6 font-semibold">Efectividad general acumulada por materia.</p>
                     <div class="space-y-4">
@@ -315,7 +379,6 @@
                          </div>`;
             } else {
                 for (const [key, info] of Object.entries(subjectsInfo)) {
-                    // Filtrar historial de esta materia
                     let subHistory = history.filter(h => h.subject === key);
                     if(subHistory.length === 0) continue;
 
@@ -349,7 +412,7 @@
             }
 
             html += `
-                    <button onclick="clearStats()" class="mt-8 w-full py-4 font-bold text-rose-500 bg-rose-50 rounded-2xl hover:bg-rose-100 transition shadow-sm border border-rose-100">
+                    <button onclick="clearStats()" class="mt-8 w-full py-4 font-bold text-rose-500 bg-rose-50 rounded-2xl hover:bg-rose-100 transition shadow-sm border border-rose-100 active:scale-95">
                         🗑️ Borrar todo mi progreso
                     </button>
                 </div>
@@ -358,24 +421,27 @@
         }
 
         function clearStats() {
-            if(confirm("¿Estás seguro de que quieres borrar todo tu historial de progreso? Esto no se puede deshacer.")) {
-                localStorage.removeItem('lockin_stats');
-                renderStats();
-            }
+            // Usando el modal personalizado en lugar del "confirm()" de iOS
+            showModal(
+                "Borrar Progreso", 
+                "¿Estás seguro de que quieres borrar todo tu historial de aciertos y errores? Esto no se puede deshacer.", 
+                "confirm", 
+                function() {
+                    localStorage.removeItem('lockin_stats');
+                    renderStats();
+                }
+            );
         }
 
         // --- MOTOR DEL QUIZ ---
         function startQuiz(subject) {
             currentSubject = subject;
             
-            // Unir preguntas por defecto y las del usuario
             let allQ = [...examQuestions, ...userQuestions];
-            
-            // Filtrar y mezclar
             let rawQuestions = allQ.filter(q => q.s === subject);
             
             if (rawQuestions.length === 0) {
-                alert("No hay preguntas en esta materia. ¡Añade algunas primero!");
+                showModal("¡Ups!", "No hay preguntas en esta materia. ¡Añade algunas primero!", "alert");
                 return;
             }
             
@@ -408,7 +474,6 @@
                     <div class="grid grid-cols-1 gap-3 mb-6" id="options-container">
             `;
 
-            // Mantener las opciones estáticas para evitar desajustes
             qData.o.forEach((opt, index) => {
                 html += `
                     <button onclick="checkAnswer(${index})" class="btn-option w-full bg-white border-2 border-slate-200 text-slate-700 font-bold py-4 px-5 rounded-2xl text-left text-base shadow-sm hover:border-slate-300">
@@ -431,6 +496,7 @@
             
             appContainer.innerHTML = html;
             window.scrollTo(0, 0);
+            renderMath();
         }
 
         function checkAnswer(selectedIndex) {
@@ -440,7 +506,6 @@
             const feedbackMsg = document.getElementById('feedback-msg');
             const feedbackExp = document.getElementById('feedback-exp');
             
-            // Bloquear clics dobles
             for(let i=0; i<options.length; i++) {
                 options[i].disabled = true;
                 options[i].classList.add('opacity-40');
@@ -464,8 +529,8 @@
             }
             
             feedbackExp.innerText = qData.e;
+            renderMath(); 
             
-            // Hacer scroll hacia el feedback para que se vea completo en pantallas chicas
             setTimeout(() => {
                 feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }, 100);
@@ -476,7 +541,6 @@
             if (currentQuestionIndex < activeQuestions.length) {
                 renderQuestion();
             } else {
-                // Guardar estadísticas al terminar
                 saveSessionStat(currentSubject, score, activeQuestions.length);
                 renderResults();
             }
@@ -506,7 +570,7 @@
             }
             
             let html = `
-                <div class="px-4 py-8 flex flex-col items-center justify-center text-center animate-pop h-full min-h-[80vh]">
+                <div class="px-4 py-8 flex flex-col items-center justify-center text-center animate-pop h-full min-h-[80vh] pb-24">
                     <div class="text-7xl mb-4">🏆</div>
                     <h2 class="text-3xl font-black mb-2 text-slate-800">${msgTitle}</h2>
                     <p class="text-slate-500 font-bold text-sm mb-8 px-4">${msgSub}</p>
@@ -549,6 +613,10 @@
                     </div>
 
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <p class="text-xs text-slate-500 mb-2 font-bold bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                            💡 Tip: Puedes usar notación LaTeX para fórmulas encerrando el texto entre signos de dólar (Ejemplo: $x^2 + y^2 = r^2$). No olvides usar doble diagonal invertida (Ej: $\\\\frac{1}{2}$).
+                        </p>
+                        
                         <div>
                             <label class="block font-bold text-slate-600 text-sm mb-1">Materia</label>
                             <select id="new-subj" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-rose-500 transition">
@@ -560,10 +628,8 @@
                             <textarea id="new-q" rows="2" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-rose-500 transition" placeholder="Ej: ¿Cuál es la derivada de sen(x)?"></textarea>
                         </div>
                         
-                        <!-- Opciones -->
                         <div class="space-y-3 pt-2">
                             <label class="block font-bold text-slate-600 text-sm">Opciones (Marca la correcta)</label>
-                            
                             <div class="flex items-center space-x-3">
                                 <input type="radio" name="correct-opt" value="0" checked class="w-5 h-5 text-rose-600 accent-rose-600">
                                 <input id="opt-0" type="text" class="flex-grow bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:border-rose-500 transition" placeholder="Opción A (Correcta por defecto)">
@@ -608,7 +674,7 @@
             const correctRadio = document.querySelector('input[name="correct-opt"]:checked');
 
             if (!q || !opt0 || !opt1 || !opt2 || !opt3) {
-                alert("Completa la pregunta y las 4 opciones.");
+                showModal("Faltan datos", "Completa la pregunta y las 4 opciones antes de guardar.", "alert");
                 return;
             }
 
@@ -623,8 +689,9 @@
             userQuestions.push(newQ);
             localStorage.setItem('lockin_user_qs', JSON.stringify(userQuestions));
             
-            alert("¡Pregunta guardada con éxito!");
-            goHome();
+            showModal("¡Guardado!", "La pregunta se agregó con éxito a tu banco de estudio.", "alert", function() {
+                goHome();
+            });
         }
 
         // Iniciar
