@@ -67,7 +67,6 @@
     </header>
 
     <main class="flex-grow max-w-md w-full mx-auto overflow-y-auto mb-16" id="app-container">
-        <!-- Contenido Inyectado -->
     </main>
 
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 pb-safe">
@@ -83,19 +82,16 @@
         </div>
     </nav>
 
-    <!-- Modal Personalizado (Sustituye a alerts y confirms) -->
     <div id="custom-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-pop">
             <h3 id="modal-title" class="text-xl font-black text-slate-800 mb-2">Título</h3>
             <p id="modal-msg" class="text-slate-600 font-semibold text-sm mb-6 leading-relaxed">Mensaje</p>
             <div id="modal-buttons" class="flex space-x-3">
-                <!-- Botones inyectados por JS -->
             </div>
         </div>
     </div>
 
     <script>
-        // --- SISTEMA DE MODALES (Para Evitar Bloqueos en iOS/PWA) ---
         function showModal(title, message, type = 'alert', onConfirm = null) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-msg').innerText = message;
@@ -125,34 +121,55 @@
             document.getElementById('custom-modal').classList.add('hidden');
         }
 
-        // --- MOTOR MATHJAX ---
         function renderMath() {
             if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetClear(); // Limpia caché visual para evitar errores de redibujado
+                window.MathJax.typesetClear(); 
                 window.MathJax.typesetPromise([document.getElementById('app-container')]).catch((err) => console.log(err.message));
             }
         }
 
         // --- MEGA BANCO DE PREGUNTAS (Nivel Examen UNAM/IPN) ---
         const examQuestions = [
-            // MATEMÁTICAS 
+            // MATEMÁTICAS (35)
+            {s:'matematicas', q:"Calcula el límite: lim(x→0) sen(3x) / x", o:["0", "1", "3", "Indeterminado"], c:2, e:"Usando el límite notable lim(x→0) sen(kx)/x = k. Aquí k=3, por lo tanto el límite es 3."},
+            {s:'matematicas', q:"¿Cuál es la derivada de f(x) = ln(x² + 1)?", o:["2x / (x² + 1)", "1 / (x² + 1)", "2x", "x / (x² + 1)"], c:0, e:"Por la regla de la cadena: d/dx[ln(u)] = u'/u. Aquí u = x²+1, entonces u' = 2x. El resultado es 2x/(x²+1)."},
+            {s:'matematicas', q:"Evalúa la integral indefinida ∫(2x + e^x) dx", o:["x² + e^x + C", "2 + e^x + C", "x² + xe^x + C", "x² - e^x + C"], c:0, e:"La integral de 2x es x². La integral de e^x es e^x. Se suma la constante de integración C."},
+            {s:'matematicas', q:"Coordenadas del centro de la circunferencia x² + y² - 6x + 4y - 12 = 0", o:["(-3, 2)", "(3, -2)", "(6, -4)", "(-6, 4)"], c:1, e:"Dividiendo los coeficientes de x e y entre -2. Centro (h,k) = (-D/2, -E/2) = (-(-6)/2, -(4)/2) = (3, -2)."},
+            {s:'matematicas', q:"Simplifica: (x³ - 8) / (x - 2)", o:["x² - 4", "x² + 2x + 4", "x² - 2x + 4", "x² + 4"], c:1, e:"Diferencia de cubos: a³-b³ = (a-b)(a²+ab+b²). x³-8 = (x-2)(x²+2x+4). Al dividir, se cancela (x-2)."},
+            {s:'matematicas', q:"Si f(x) = x² y g(x) = 2x-1, ¿cuál es f(g(x))?", o:["2x² - 1", "4x² - 4x + 1", "4x² - 1", "2x³ - x²"], c:1, e:"Sustituye g(x) dentro de f: (2x-1)². Expandiendo el binomio: 4x² - 4x + 1."},
+            {s:'matematicas', q:"Dominio de la función f(x) = log(x - 3)", o:["x ≥ 3", "x > 0", "x < 3", "x > 3"], c:3, e:"El argumento del logaritmo debe ser estrictamente positivo. x - 3 > 0, por lo que x > 3."},
+            {s:'matematicas', q:"Solución del sistema: 3x - y = 7 y 2x + 3y = 12", o:["x=3, y=2", "x=2, y=-1", "x=4, y=5", "x=1, y=-4"], c:0, e:"Multiplica la 1ra por 3: 9x-3y=21. Sumando con la 2da: 11x = 33 -> x=3. Sustituyendo en la 1ra: 3(3)-y=7 -> y=2."},
+            {s:'matematicas', q:"Si el discriminante (b² - 4ac) de una ecuación cuadrática es menor a 0:", o:["Tiene dos raíces reales iguales", "Tiene dos raíces reales diferentes", "No tiene raíces reales", "Es una recta"], c:2, e:"Si el discriminante es negativo, la ecuación arroja raíces imaginarias/complejas (no reales)."},
+            {s:'matematicas', q:"Pendiente de la recta perpendicular a y = (2/3)x - 5", o:["2/3", "-2/3", "3/2", "-3/2"], c:3, e:"Dos rectas son perpendiculares si el producto de sus pendientes es -1 (son inversas y de signo contrario). Inverso de 2/3 es -3/2."},
+            {s:'matematicas', q:"La expresión sen²(x) + cos²(x) equivale a:", o:["1", "tg(x)", "0", "sec²(x)"], c:0, e:"Identidad pitagórica fundamental de la trigonometría."},
+            {s:'matematicas', q:"¿Cuál es la distancia entre los puntos A(-2, 3) y B(1, -1)?", o:["4", "5", "7", "25"], c:1, e:"Fórmula de distancia: d = √[(1 - (-2))² + (-1 - 3)²] = √[3² + (-4)²] = √[9 + 16] = √25 = 5."},
+            {s:'matematicas', q:"Resuelve la desigualdad: |2x - 1| < 5", o:["-3 < x < 3", "-2 < x < 3", "x < 3", "x > -2"], c:1, e:"Propiedad del valor absoluto: -5 < 2x - 1 < 5. Sumas 1 a todo: -4 < 2x < 6. Divides entre 2: -2 < x < 3."},
+            {s:'matematicas', q:"Una matriz A tiene dimensión 2x3 y B es 3x4. ¿Dimensión de A*B?", o:["2x4", "3x3", "No se puede multiplicar", "2x3"], c:0, e:"Los números internos coinciden (3 y 3). La matriz resultante hereda las filas de A y columnas de B (2x4)."},
+            {s:'matematicas', q:"Probabilidad de obtener al menos un águila al lanzar 2 monedas:", o:["1/4", "1/2", "3/4", "1"], c:2, e:"Espacio muestral: AA, AS, SA, SS. En tres casos hay al menos un águila (AA, AS, SA). Prob. = 3/4."},
+            {s:'matematicas', q:"Calcula: 5 + 3 × 2", o:["16", "11", "20", "10"], c:1, e:"Por jerarquía de operaciones, primero se multiplica (3 × 2 = 6) y luego se suma (5 + 6 = 11)."},
+            {s:'matematicas', q:"Resuelve para x: 3x - 7 = 14", o:["7", "21", "10", "4"], c:0, e:"Pasas el 7 sumando: 3x = 21. Divides entre 3: x = 7."},
+            {s:'matematicas', q:"Convierte 0.75 a fracción irreducible:", o:["3/4", "75/100", "1/4", "4/3"], c:0, e:"0.75 equivale a 75/100. Dividiendo ambos entre 25, obtenemos 3/4."},
+            {s:'matematicas', q:"¿Cuál es el área de un triángulo de base 6m y altura 4m?", o:["24 m²", "10 m²", "12 m²", "20 m²"], c:2, e:"La fórmula es (base × altura) / 2. (6 × 4) / 2 = 24 / 2 = 12 m²."},
+            {s:'matematicas', q:"Simplifica: (x³)²", o:["x⁵", "x⁶", "x⁹", "x"], c:1, e:"Al elevar una potencia a otra potencia, los exponentes se multiplican: 3 × 2 = 6."},
             {s:'matematicas', q:"¿Cuál es el número que se encuentra en la sexta posición de la sucesión: $\\frac{5}{2}, \\frac{1}{2}, -\\frac{3}{2}, -\\frac{7}{2}, ...$?", o:["$-\\frac{15}{2}$", "$-\\frac{11}{2}$", "$\\frac{11}{2}$", "$-\\frac{9}{2}$"], c:0, e:"La diferencia de la progresión es -2. Restando -2 repetidamente llegamos a -15/2 en la sexta posición."},
             {s:'matematicas', q:"Descomponer en factores la expresión: $6ac + 2ad - 3bc - bd$", o:["$(2a-b)(3c+d)$", "$(2a+b)(3c+d)$", "$(2a-b)(3c-d)$", "$(2a+b)(3c-d)$"], c:0, e:"Agrupando: $2a(3c+d) - b(3c+d)$. Factorizando el término común resulta en $(2a-b)(3c+d)$."},
             {s:'matematicas', q:"Identificar el sistema de ecuaciones lineales que tiene por solución $y=-1, x=3$", o:["$4x+2y=10 \\quad ; \\quad 2x+4y=2$", "$-2x+4y=10 \\quad ; \\quad 4x-2y=2$", "$4x+2y=2 \\quad ; \\quad 4x-2y=10$", "$4x-2y=2 \\quad ; \\quad 2x+4y=10$"], c:0, e:"Sustituyendo en la opción A: $4(3)+2(-1) = 12-2=10$ y $2(3)+4(-1) = 6-4=2$. Ambas se cumplen."},
             {s:'matematicas', q:"Determinar el intervalo solución de la desigualdad: $-3 < \\frac{4x-7}{6} < 9$", o:["$(-\\frac{11}{3},\\frac{61}{3})$", "$(-\\frac{11}{4},\\frac{61}{4})$", "$(-\\frac{13}{3},\\frac{61}{3})$", "$(-\\frac{13}{4},\\frac{61}{4})$"], c:1, e:"Multiplicamos por 6: $-18 < 4x-7 < 54$. Sumamos 7: $-11 < 4x < 61$. Dividimos entre 4: $-11/4 < x < 61/4$."},
             {s:'matematicas', q:"Las calificaciones de Biología son: 6.0, 7.0, 8.0, 7.0, 6.0, 8.0, 4.0, 7.0, 6.0, 7.0. ¿Cuál es la moda?", o:["6.5", "7.0", "6.0", "7.5"], c:1, e:"La moda es el valor que más se repite. El 7.0 aparece 4 veces, más que cualquier otro número."},
-            {s:'matematicas', q:"El salario de un trabajador es proporcional a su edad. Si actualmente tiene 21 años, ¿dentro de cuántos años triplicará su salario?", o:["14", "21", "42", "63"], c:2, e:"Si es proporcional, para triplicar el salario debe triplicar su edad (63 años). $63 - 21 = 42$ años en el futuro."},
             {s:'matematicas', q:"Determinar el valor de la integral definida: $\\int_{1}^{3}(x^3 - 2x)dx$", o:["20", "28", "36", "12"], c:3, e:"Antiderivada: $\\frac{x^4}{4} - x^2$. Evaluada en 3 da $45/4$. Evaluada en 1 da $-3/4$. Su diferencia es $48/4 = 12$."},
-            {s:'matematicas', q:"El producto de $(\\frac{7p}{9}-1)$ por $(\\frac{9p}{14}+2)$ es igual a:", o:["$\\frac{p^2}{2}+\\frac{32}{63}p-2$", "$\\frac{p^2}{2}-\\frac{115}{126}p-2$", "$\\frac{p^2}{2}+\\frac{115}{126}p-2$", "$\\frac{p^2}{3}-\\frac{32}{63}p-2$"], c:2, e:"Multiplicando término a término y simplificando las fracciones se obtiene el trinomio indicado."},
             {s:'matematicas', q:"Simplificar la expresión matemática: $(x+4)(x^2+4x+16) - (x-4)(x^2-4x+16)$", o:["$16x^2$", "$8x^2-128$", "128", "$16x^2+128$"], c:3, e:"Al desarrollar ambos productos y restar el segundo del primero, los términos cúbicos se cancelan, resultando en $16x^2+128$."},
             {s:'matematicas', q:"Calcular el valor del límite: $\\lim_{x\\rightarrow0}\\frac{x}{\\sin 4x}$", o:["16", "$\\frac{1}{16}$", "$\\frac{1}{4}$", "4"], c:2, e:"Usando el límite notable $\\lim_{x\\rightarrow0} \\frac{x}{\\sin(kx)} = \\frac{1}{k}$. En este caso $k=4$, por lo que es $1/4$."},
-            {s:'matematicas', q:"Dentro de 8 años, la edad de Jonathan será el doble de la de Alfredo. ¿Cuál es su edad actual si hace 3 años era el triple de la de Alfredo?", o:["14 años", "18 años", "7 años", "36 años"], c:3, e:"Planteando el sistema: $J+8 = 2(A+8)$ y $J-3 = 3(A-3)$. Resolviendo, A = 14 y J = 36."},
             {s:'matematicas', q:"Factorizar la expresión: $6a^3bc^5 - 9a^2b^5c + 5ab^4c^3$", o:["$abc(6a^2c^4 - 9ab^4 + 5b^3c^2)$", "$abc(6a^2c^4 - 9ab^4 + 5b^4c^3)$", "$abc(6a^3c^4 - 9ab^5 + 5b^3c^2)$", "$abc(6a^2c^4 - 9ab^5 + 5b^3c^2)$"], c:0, e:"El factor común es $abc$. Al dividir cada término entre $abc$ se obtienen los coeficientes y exponentes correspondientes."},
-            {s:'matematicas', q:"En un grupo de 22 trabajadores se graficaron sus edades. El pico de la gráfica está en los 47 años. ¿Cuáles son la mediana y la moda?", o:["47 y 57", "35 y 42", "35 y 47", "47 y 47"], c:3, e:"La moda es la frecuencia más alta (47 años). Al ser 22 datos, la mediana cae entre las posiciones 11 y 12, que también corresponden a la edad de 47 años."},
             {s:'matematicas', q:"Resolver la integral: $\\int 4 \\ln x \\, dx$", o:["$4x \\ln x - x + C$", "$4x \\ln x - 4x + C$", "$4x \\ln x + 4x + C$", "$x \\ln 4x - x + C$"], c:1, e:"Por integración por partes (u = ln x, dv = dx), la integral de ln(x) es x ln(x) - x. Multiplicado por 4 nos da la opción correcta."},
-            {s:'matematicas', q:"Calcular la integral indefinida: $\\int \\sin x \\cos x \\, dx$", o:["$\\frac{1}{4}\\sin^2 x + C$", "$2\\sin^2 x + C$", "$-\\frac{1}{2}\\sin^2 x + C$", "$\\frac{1}{2}\\sin^2 x + C$"], c:3, e:"Sustitución simple: Si $u = \\sin x$, entonces $du = \\cos x \\, dx$. $\\int u \\, du = \\frac{u^2}{2} = \\frac{1}{2}\\sin^2 x + C$."},
-            
-            // FÍSICA
+            // -- NUEVAS MATEMÁTICAS --
+            {s:'matematicas', q:"Un equipo de básquetbol obtuvo los puntajes: 68, 72, 55, 71, 83, 50, 85, 72, 65, 69. Determina el promedio, la mediana y la moda.", o:["69, 70, 72", "70, 68, 85", "70, 70, 72", "69, 83, 72"], c:0, e:"Ordenando: 50, 55, 65, 68, 69, 71, 72, 72, 83, 85. La moda es 72. La mediana es (69+71)/2 = 70. Promedio: suma (690) entre 10 = 69."},
+            {s:'matematicas', q:"Se tienen 5 bolsas de sal, cada una con 1.5 oz. Si se reparte entre 15 personas, ¿cuántos gramos tocan a cada una? (1 oz = 28.34 g)", o:["28.34 g", "14.17 g", "56.68 g", "42.51 g"], c:1, e:"Total de sal: 5 × 1.5 = 7.5 oz. Entre 15 personas: 7.5 / 15 = 0.5 oz. En gramos: 0.5 × 28.34 = 14.17 g."},
+            {s:'matematicas', q:"Al efectuar la operación $(2x+3y-4z)(2x-3y+4z)$ se obtiene:", o:["$4x^2-9y^2-16z^2$", "$4x^2-9y^2-6xy+16z^2$", "$4x^2+9y^2-24yz+16z^2$", "$4x^2-9y^2+24yz-16z^2$"], c:3, e:"Se agrupa como binomios conjugados: $(2x + (3y-4z))(2x - (3y-4z)) = 4x^2 - (3y-4z)^2$. Al desarrollar el binomio obtenemos la opción D."},
+            {s:'matematicas', q:"El desarrollo del binomio $(2a+3ab)^2$ es:", o:["$a^2+6a^2b+9a^2b^2$", "$a^2+2a^2b+a^2b^2$", "$4a^2+4a^2b+a^2b^2$", "$4a^2+12a^2b+9a^2b^2$"], c:3, e:"El cuadrado del primero $(4a^2)$, más doble producto $(2 \\times 2a \\times 3ab = 12a^2b)$, más el cuadrado del segundo $(9a^2b^2)$."},
+            {s:'matematicas', q:"Simplifica la siguiente expresión algebraica: $\\frac{4a^2-9b^2}{2a-3b}$", o:["$\\frac{1}{2a-3b}$", "$\\frac{1}{2a+3b}$", "$2a-3b$", "$2a+3b$"], c:3, e:"El numerador es diferencia de cuadrados: $(2a+3b)(2a-3b)$. Al dividirlo entre $(2a-3b)$, se cancelan los idénticos y queda $(2a+3b)$."},
+
++
+            // FÍSICA (18)
             {s:'fisica', q:"Si la distancia entre dos masas se reduce a la mitad, la fuerza gravitacional entre ellas:", o:["Se reduce a la mitad", "Se duplica", "Se cuadruplica", "No cambia"], c:2, e:"Fórmula: F = G(m1m2)/r². Si 'r' se divide entre 2, su cuadrado divide entre 4. Por ley de sándwich, la fuerza se multiplica por 4."},
             {s:'fisica', q:"Unidad de la potencia eléctrica en el Sistema Internacional:", o:["Voltio", "Amperio", "Joule", "Watt"], c:3, e:"La potencia (rapidez con la que se transfiere energía) se mide en Joules/segundo, que equivale a Watts."},
             {s:'fisica', q:"La energía cinética de un cuerpo depende directamente de:", o:["Su masa y su altura", "Su masa y el cuadrado de su velocidad", "Su peso y su aceleración", "Su densidad y volumen"], c:1, e:"Fórmula de la energía cinética: Ec = (1/2) * m * v². Depende de la masa y el cuadrado de la velocidad."},
@@ -168,8 +185,25 @@
             {s:'fisica', q:"Fuerza de empuje que recibe un cuerpo sumergido es igual al peso del fluido desplazado:", o:["Arquímedes", "Pascal", "Newton", "Boyle"], c:0, e:"Es el enunciado exacto del Principio de Arquímedes (flotabilidad)."},
             {s:'fisica', q:"Cambio aparente en la frecuencia de una onda debido al movimiento relativo entre la fuente y el observador:", o:["Efecto Compton", "Efecto Fotoeléctrico", "Efecto Doppler", "Difracción"], c:2, e:"El Efecto Doppler explica por qué la sirena de una ambulancia cambia de tono al acercarse y alejarse."},
             {s:'fisica', q:"¿A cuántos grados Kelvin equivalen 20 °C?", o:["253.15 K", "273.15 K", "293.15 K", "313.15 K"], c:2, e:"Fórmula: K = °C + 273.15. Por lo tanto, 20 + 273.15 = 293.15 K."},
+            {s:'fisica', q:"Un auto viaja a una velocidad constante de 20 m/s durante 10 segundos. ¿Qué distancia recorre?", o:["2 m", "200 m", "0.5 m", "2000 m"], c:1, e:"La fórmula del MRU es $d = v \\times t$. Multiplicando $20 \\, \\text{m/s} \\times 10 \\, \\text{s}$ obtenemos 200 metros."},
+            {s:'fisica', q:"La Segunda Ley de Newton establece que la aceleración de un objeto es directamente proporcional a:", o:["Su masa", "La fuerza neta aplicada", "Su velocidad inicial", "El tiempo de contacto"], c:1, e:"La fórmula $F = m \\times a$ (o $a = F/m$) indica que la aceleración crece de manera proporcional a la fuerza."},
+            {s:'fisica', q:"El fenómeno de la refracción de la luz ocurre cuando:", o:["La luz rebota en una superficie pulida", "La luz cambia de dirección al pasar a un medio de distinta densidad", "La luz es absorbida por un cuerpo negro", "Dos ondas de luz se superponen"], c:1, e:"La refracción es el cambio de dirección y velocidad que experimenta una onda al pasar de un medio a otro (ej. aire al agua)."},
+            {s:'fisica', q:"Energía que posee un cuerpo debido a su posición o altura:", o:["Cinética", "Mecánica", "Potencial gravitatoria", "Térmica"], c:2, e:"La energía potencial gravitatoria ($E_p = mgh$) depende de la masa, la gravedad y la altura a la que se encuentre el objeto."},
+            // ==========================================
+            // BLOQUE DE EXPANSIÓN: FÍSICA (Reactivos 16 al 25)
+            // ==========================================
+            {s:'fisica', q:"Un cuerpo con una masa de $4 \\, \\text{kg}$ se desplaza describiendo un movimiento circular uniforme con un radio de $2 \\, \\text{m}$ y una velocidad lineal constante de $6 \\, \\text{m/s}$. ¿Cuál es la magnitud de la fuerza centrípeta que experimenta?", o:["$12 \\, \\text{N}$", "$48 \\, \\text{N}$", "$72 \\, \\text{N}$", "$36 \\, \\text{N}$"], c:2, e:"La fuerza centrípeta se calcula mediante la fórmula matemática $F_c = \\frac{m \\cdot v^2}{r}$. Sustituyendo los datos del problema: $F_c = \\frac{4 \\cdot (6)^2}{2} = \\frac{4 \\cdot 36}{2} = 2 \\cdot 36 = 72 \\, \\text{N}$."},
+            {s:'fisica', q:"De acuerdo con la ley de Ohm y la resistividad eléctrica, si duplicamos la longitud de un cable conductor y al mismo tiempo reducimos su área transversal a la mitad, ¿qué le ocurre a su resistencia eléctrica original?", o:["Se mantiene igual", "Se duplica", "Se reduce a la cuarta parte", "Se cuadruplica"], c:3, e:"La resistencia de un conductor se calcula mediante $R = \\rho \\frac{L}{A}$. Si la nueva longitud es $2L$ y la nueva área es $A/2$, sustituimos: $R_{nueva} = \\rho \\frac{2L}{A/2} = 4 \\left(\\rho \\frac{L}{A}\\right) = 4R$. La resistencia se cuadruplica."},
+            {s:'fisica', q:"Una máquina térmica absorbe exactamente $1000 \\, \\text{J}$ de calor desde un depósito caliente y realiza simultáneamente un trabajo mecánico de $400 \\, \\text{J}$ por ciclo. Calcula la eficiencia térmica de la máquina y el calor desechado hacia el depósito frío.", o:["Eficiencia $= 40\\%$, Calor desechado $= 600 \\, \\text{J}$", "Eficiencia $= 60\\%$, Calor desechado $= 400 \\, \\text{J}$", "Eficiencia $= 40\\%$, Calor desechado $= 1400 \\, \\text{J}$", "Eficiencia $= 25\\%$, Calor desechado $= 600 \\, \\text{J}$"], c:0, e:"La eficiencia térmica es $\\eta = \\frac{W}{Q_H} = \\frac{400}{1000} = 0.4$ o $40\\%$. Por la primera ley de la termodinámica, el calor liberado al depósito frío es $Q_C = Q_H - W = 1000 - 400 = 600 \\, \\text{J}$."},
+            {s:'fisica', q:"¿Cuál es la presión hidrostática que experimenta un buzo sumergido a una profundidad de $30 \\, \\text{m}$ bajo el agua dulce? (Considera $\\rho_{agua} = 1000 \\, \\text{kg/m}^3$ y $g = 9.8 \\, \\text{m/s}^2$)", o:["$294,000 \\, \\text{Pa}$", "$29,400 \\, \\text{Pa}$", "$3,000 \\, \\text{Pa}$", "$98,000 \\, \\text{Pa}$"], c:0, e:"La presión hidrostática se calcula con la ecuación $P = \\rho \\cdot g \\cdot h$. Sustituyendo los valores provistos por el problema: $P = 1000 \\, \\text{kg/m}^3 \\times 9.8 \\, \\text{m/s}^2 \\times 30 \\, \\text{m} = 294,000 \\, \\text{Pa}$ (o $294 \\, \\text{kPa}$)"},
+            {s:'fisica', q:"Dos cargas puntuales eléctricas de $q_1 = +2 \\, \\mu\\text{C}$ y $q_2 = +4 \\, \\mu\\text{C}$ se encuentran separadas a una distancia física de $2 \\, \\text{m}$ en el vacío. Determina la fuerza electrostática de repulsión entre ellas.", o:["$18 \\times 10^{-3} \\, \\text{N}$", "$0.018 \\, \\text{N}$", "$1.8 \\, \\text{N}$", "$36 \\times 10^{-3} \\, \\text{N}$"], c:1, e:"Usando la ley de Coulomb: $F = k \\frac{|q_1 \\cdot q_2|}{r^2}$. Sustituyendo: $F = (9 \\times 10^9) \\frac{(2 \\times 10^{-6})(4 \\times 10^{-6})}{(2)^2} = (9 \\times 10^9) \\frac{8 \\times 10^{-12}}{4} = (9 \\times 10^9)(2 \\times 10^{-12}) = 18 \\times 10^{-3} \\, \\text{N} = 0.018 \\, \\text{N}$."},
+            {s:'fisica', q:"De acuerdo con los principios de la óptica geométrica, si un objeto se coloca a una distancia de $15 \\, \\text{cm}$ frente a un espejo cóncavo que posee una distancia focal de $10 \\, \\text{cm}$, ¿a qué distancia del espejo se formará la imagen real?", o:["$6 \\, \\text{cm}$", "$30 \\, \\text{cm}$", "$25 \\, \\text{cm}$", "$15 \\, \\text{cm}$"], c:1, e:"Utilizando la ecuación de los espejos esféricos delgados: $\\frac{1}{f} = \\frac{1}{d_o} + \\frac{1}{d_i}$. Despejando el término de la imagen: $\\frac{1}{10} = \\frac{1}{15} + \\frac{1}{d_i} \\rightarrow \\frac{1}{d_i} = \\frac{1}{10} - \\frac{1}{15} = \\frac{3-2}{30} = \\frac{1}{30}$. Por lo tanto, $d_i = 30 \\, \\text{cm}$."},
+            {s:'fisica', q:"Un tren de ondas viaja con una velocidad de propagación constante de $340 \\, \\text{m/s}$. Si la longitud de onda medida es de exactamente $0.5 \\, \\text{m}$, calcula la frecuencia de la onda y determina su periodo de oscilación.", o:["$680 \\, \\text{Hz}$ y $1.47 \\times 10^{-3} \\, \\text{s}$", "$170 \\, \\text{Hz}$ y $5.88 \\times 10^{-3} \\, \\text{s}$", "$680 \\, \\text{Hz}$ y $0.5 \\, \\text{s}$", "$340 \\, \\text{Hz}$ y $2.94 \\times 10^{-3} \\, \\text{s}$"], c:0, e:"La ecuación fundamental de la onda es $v = \\lambda \\cdot f$. Despejando frecuencia: $f = v / \\lambda = 340 / 0.5 = 680 \\, \\text{Hz}$. El periodo es el inverso de la frecuencia: $T = 1 / f = 1 / 680 \\approx 0.00147 \\, \\text{s}$ o $1.47 \\times 10^{-3} \\, \\text{s}$."},
+            {s:'fisica', q:"Un bloque de madera permanece flotando en un estanque. Si el $30\\%$ del volumen total del bloque se encuentra emergiendo de la superficie del agua, ¿cuál es la densidad del bloque de madera?", o:["$300 \\, \\text{kg/m}^3$", "$700 \\, \\text{kg/m}^3$", "$1000 \\, \\text{kg/m}^3$", "$450 \\, \\text{kg/m}^3$"], c:1, e:"Por el principio de Arquímedes, la fracción del volumen sumergido es directamente proporcional a la relación de densidades: $\\frac{V_{sumergido}}{V_{total}} = \\frac{\\rho_{cuerpo}}{\\rho_{fluido}}$. Si emerge el $30\\%$, significa que el $70\\%$ está sumergido. Por tanto, $\\rho_{cuerpo} = 0.70 \\times 1000 \\, \\text{kg/m}^3 = 700 \\, \\text{kg/m}^3$."},
+            {s:'fisica', q:"En un circuito de corriente alterna, un capacitor ideal tiene una reactancia capacitiva de $50 \\, \\Omega$ y se conecta en serie a una resistencia pura de $120 \\, \\Omega$. Calcula la impedancia total del circuito Z.", o:["$170 \\, \\Omega$", "$130 \\, \\Omega$", "$70 \\, \\Omega$", "$150 \\, \\Omega$"], c:1, e:"La impedancia en un circuito RC serie se calcula vectorialmente debido al desfase de fase de 90 grados: $Z = \\sqrt{R^2 + X_C^2}$. Sustituyendo: $Z = \\sqrt{120^2 + 50^2} = \\sqrt{14400 + 2500} = \\sqrt{16900} = 130 \\, \\Omega$."},
+            {s:'fisica', q:"Un proyectil es lanzado con una velocidad inicial de $50 \\, \\text{m/s}$ y un ángulo de elevación de $30^\\circ$ respecto a la horizontal. Calcula la componente vertical de su velocidad inicial ($V_{0y}$). (Considera $\\sin 30^\\circ = 0.5$, $\\cos 30^\\circ = 0.866$)", o:["$25 \\, \\text{m/s}$", "$43.3 \\, \\text{m/s}$", "$50 \\, \\text{m/s}$", "$12.5 \\, \\text{m/s}$"], c:0, e:"La componente vertical de la velocidad inicial en un tiro parabólico se calcula mediante la función trigonométrica seno: $V_{0y} = V_0 \\cdot \\sin(\\theta)$. Sustituyendo: $V_{0y} = 50 \\, \\text{m/s} \\times \\sin(30^\\circ) = 50 \\times 0.5 = 25 \\, \\text{m/s}$."},
 
-            // QUÍMICA 
+            // QUÍMICA (15)
             {s:'quimica', q:"Partícula subatómica responsable de la formación de enlaces químicos:", o:["Neutrón", "Protón", "Positrón", "Electrón de valencia"], c:3, e:"Los electrones de la capa más externa (valencia) son los que se comparten o ceden para formar enlaces."},
             {s:'quimica', q:"Número cuántico principal 'n' determina:", o:["La forma del orbital", "El nivel de energía y tamaño", "La orientación espacial", "El espín del electrón"], c:1, e:"El número 'n' (1, 2, 3...) indica el nivel energético y la distancia promedio del núcleo (tamaño)."},
             {s:'quimica', q:"¿Cuántos moles hay en 36 gramos de agua (H₂O)?", o:["1 mol", "2 moles", "3 moles", "0.5 moles"], c:1, e:"Masa molar H₂O = (2x1) + 16 = 18 g/mol. Moles = Masa / Masa molar = 36 / 18 = 2 moles."},
@@ -185,8 +219,47 @@
             {s:'quimica', q:"Gas responsable del efecto invernadero y producto de la combustión completa:", o:["Monóxido de carbono (CO)", "Dióxido de carbono (CO₂)", "Ozono (O₃)", "Clorofluorocarbono"], c:1, e:"El CO₂ se libera al quemar hidrocarburos y atrapa calor en la atmósfera."},
             {s:'quimica', q:"¿Qué tipo de enlace se presenta en la molécula de O₂?", o:["Iónico", "Covalente polar", "Covalente no polar", "Puente de hidrógeno"], c:2, e:"Al unirse dos átomos del mismo elemento, la diferencia de electronegatividad es 0, los electrones se comparten equitativamente (no polar)."},
             {s:'quimica', q:"Isótopos son átomos del mismo elemento que difieren en el número de:", o:["Protones", "Electrones", "Neutrones", "Niveles de energía"], c:2, e:"Tienen el mismo número atómico (protones) pero diferente masa debido a una cantidad variable de neutrones."},
+            // -- NUEVAS QUÍMICA --
+            {s:'quimica', q:"Identifica los fenómenos puramente físicos en la lista: 1. Combustión de madera, 2. Romper papel, 3. Evaporación, 4. Corrosión, 5. Cortar leña", o:["2, 3, 5", "2, 4, 5", "1, 3, 4", "1, 2, 4"], c:0, e:"En los fenómenos físicos (romper, evaporar, cortar) no se altera la estructura química interna de la materia."},
+            {s:'quimica', q:"Ley que enuncia que en una reacción química la suma de la masa de los reactivos es igual a la suma de la masa de los productos:", o:["De las proporciones múltiples", "De conservación de la masa", "De los gases ideales", "De Avogadro"], c:1, e:"Postulada por Antoine Lavoisier: 'La materia no se crea ni se destruye, solo se transforma'."},
+            {s:'quimica', q:"Es el cambio de estado sólido a gaseoso de manera directa, sin pasar por el líquido:", o:["Evaporación", "Licuefacción", "Condensación", "Sublimación"], c:3, e:"La sublimación ocurre en sustancias como el hielo seco o el yodo al absorber calor saltándose la fase líquida."},
+            {s:'quimica', q:"¿Qué método de separación se utiliza en la industria para la obtención de licores como el vodka a partir de una mezcla de alcohol y agua?", o:["Filtración", "Evaporación", "Destilación", "Cristalización"], c:2, e:"La destilación separa líquidos miscibles basándose en sus diferentes puntos de ebullición."},
+            {s:'quimica', q:"Isótopo radiactivo utilizado en el ámbito médico en radioterapias para tratar pacientes con cáncer:", o:["Yodo-131", "Plomo-212", "Carbono-11", "Cobalto-60"], c:3, e:"El Cobalto-60 emite rayos gamma de alta energía, ideales para destruir células cancerígenas y esterilización radiológica."},
+            // ==========================================
+            // BLOQUE DE EXPANSIÓN: QUÍMICA (Reactivos 16 al 30)
+            // ==========================================
+            {s:'quimica', q:"¿Cuál es el número atómico (Z) de un elemento cuya configuración electrónica termina en $3p^5$?", o:["17", "15", "35", "9"], c:0, e:"La configuración completa es $1s^2 2s^2 2p^6 3s^2 3p^5$. Sumando todos los electrones obtenemos: 2+2+6+2+5 = 17, que corresponde al elemento Cloro."},
+            {s:'quimica', q:"Al combinarse un metal del grupo IA con un no metal del grupo VIIA, el tipo de enlace que se forma es principalmente:", o:["Covalente polar", "Iónico", "Covalente no polar", "Metálico"], c:1, e:"Los metales alcalinos (IA) ceden muy fácilmente su electrón de valencia a los halógenos (VIIA), formando cationes y aniones que se atraen electrostáticamente, lo cual es la definición de enlace iónico."},
+            {s:'quimica', q:"De acuerdo con la teoría clásica de Arrhenius, un ácido es una sustancia que en solución acuosa:", o:["Libera iones hidróxido ($OH^-$)", "Acepta protones", "Libera iones hidrógeno ($H^+$)", "Dona pares de electrones"], c:2, e:"Arrhenius definió a los ácidos estrictamente como aquellas sustancias que se disocian en agua produciendo iones $H^+$ (protones), mientras que las bases liberan $OH^-$."},
+            {s:'quimica', q:"En la ecuación balanceada: $N_2 + 3H_2 \\rightarrow 2NH_3$, ¿cuántos moles de amoniaco se producen a partir de 2 moles de nitrógeno?", o:["2 moles", "4 moles", "6 moles", "3 moles"], c:1, e:"La relación estequiométrica de la ecuación indica que 1 mol de $N_2$ produce 2 moles de $NH_3$. Por regla de tres, si se usan 2 moles de $N_2$, se producirá el doble: 4 moles de $NH_3$."},
+            {s:'quimica', q:"Es la propiedad intensiva de la materia que indica la relación entre la masa de una sustancia y el volumen que ocupa:", o:["Peso", "Densidad", "Viscosidad", "Masa molar"], c:1, e:"La densidad ($d = m/v$) es una propiedad intensiva (no depende de la cantidad de materia presente) que relaciona cuánta masa hay contenida en un volumen determinado."},
+            {s:'quimica', q:"Identifica el grupo funcional que caracteriza a los alcoholes en química orgánica:", o:["-COOH", "-CHO", "-OH", "-NH_2"], c:2, e:"El grupo hidroxilo (-OH) unido a un átomo de carbono es la marca distintiva de la familia de los alcoholes. El -COOH es de los ácidos carboxílicos."},
+            {s:'quimica', q:"Los elementos de la tabla periódica moderna se ordenan de acuerdo con su:", o:["Masa atómica", "Electronegatividad", "Número de neutrones", "Número atómico"], c:3, e:"A diferencia de Mendeleiev (que usó la masa), Henry Moseley determinó que las propiedades de los elementos son una función periódica de sus números atómicos (Z, la cantidad de protones)."},
+            {s:'quimica', q:"¿Qué tipo de reacción química representa la ecuación $CaCO_3 \\rightarrow CaO + CO_2$?", o:["Síntesis", "Sustitución simple", "Descomposición", "Doble sustitución"], c:2, e:"Es una reacción de descomposición (o análisis), donde un solo reactivo complejo se divide mediante calor en dos o más productos simples."},
+            {s:'quimica', q:"Al mezclar agua y aceite se forma un sistema heterogéneo. El método físico idóneo para separar ambos líquidos es la:", o:["Decantación", "Destilación", "Filtración", "Cromatografía"], c:0, e:"La decantación permite separar líquidos inmiscibles (que no se mezclan entre sí) basándose en su diferencia de densidades usando un embudo de separación."},
+            {s:'quimica', q:"El núcleo de un átomo de Sodio ($^{23}_{11}Na$) está compuesto por:", o:["11 protones y 23 neutrones", "11 protones y 12 neutrones", "12 protones y 11 neutrones", "11 electrones y 12 protones"], c:1, e:"El número inferior (Z = 11) indica los protones. El número superior (A = 23) es la masa atómica (protones + neutrones). Para sacar los neutrones restamos: $A - Z = 23 - 11 = 12$."},
+            {s:'quimica', q:"Si la entalpía ($\\Delta H$) de una reacción química tiene un valor negativo, significa que el proceso es:", o:["Endotérmico", "Espontáneo", "Reversible", "Exotérmico"], c:3, e:"Un $\\Delta H < 0$ indica que la energía de los productos es menor a la de los reactivos, es decir, el sistema perdió/liberó calor hacia su entorno. Esto define a un proceso exotérmico."},
+            {s:'quimica', q:"¿Cuál es la fórmula química correcta del ácido sulfúrico?", o:["$H_2SO_3$", "$H_2S$", "$H_2SO_4$", "$HSO_4$"], c:2, e:"El ácido sulfúrico se forma por la unión del anión poliatómico sulfato ($SO_4^{-2}$) y dos cationes de hidrógeno ($H^+$) para neutralizar las cargas, resultando en $H_2SO_4$."},
+            {s:'quimica', q:"Es la energía mínima necesaria para arrancarle un electrón al nivel más externo de un átomo gaseoso en estado fundamental:", o:["Electronegatividad", "Afinidad electrónica", "Energía de ionización", "Radio atómico"], c:2, e:"La energía o potencial de ionización mide la dificultad que existe para quitarle un electrón a un átomo y convertirlo en un catión positivo."},
+            {s:'quimica', q:"'A temperatura constante, el volumen de una masa fija de gas es inversamente proporcional a la presión que se le aplica'. Este enunciado corresponde a la Ley de:", o:["Charles", "Boyle", "Gay-Lussac", "Avogadro"], c:1, e:"La Ley de Boyle-Mariotte establece la relación matemática inversa entre presión y volumen cuando la temperatura del sistema se mantiene constante ($P_1V_1 = P_2V_2$)."},
+            {s:'quimica', q:"Si una disolución cambia su pH de 3 a 5, la concentración de iones $H^+$:", o:["Disminuye 2 veces", "Aumenta 20 veces", "Disminuye 100 veces", "Aumenta 2 veces"], c:2, e:"La escala de pH es logarítmica (base 10) e inversa. Un aumento de 2 unidades de pH significa que la acidez bajó por un factor de $10^2 = 100$. La concentración de protones disminuye 100 veces."},
 
-            // BIOLOGÍA - NUEVAS (Del PDF subido)
+            // BIOLOGÍA (15)
+            {s:'biologia', q:"Proceso metabólico mediante el cual se degrada la glucosa hasta piruvato generando 2 ATP netos:", o:["Ciclo de Krebs", "Glucólisis", "Cadena respiratoria", "Fermentación"], c:1, e:"La glucólisis ocurre en el citoplasma y es el primer paso tanto en respiración aerobia como anaerobia."},
+            {s:'biologia', q:"En el dogma central de la biología, la transcripción consiste en:", o:["Copiar ADN a ADN", "Traducir ARN a Proteína", "Crear ARNm a partir de un molde de ADN", "Replicar ribosomas"], c:2, e:"Transcripción es 'reescribir' el código genético del ADN a ARN mensajero (ARNm) para que pueda salir del núcleo."},
+            {s:'biologia', q:"Tipo de transporte celular que requiere gasto de energía (ATP):", o:["Ósmosis", "Difusión facilitada", "Transporte activo", "Difusión simple"], c:2, e:"El transporte activo mueve sustancias en contra del gradiente de concentración, por lo que necesita invertir ATP (ej. Bomba de Sodio-Potasio)."},
+            {s:'biologia', q:"Postulado de Darwin y Wallace sobre la evolución:", o:["Uso y desuso de órganos", "Herencia de caracteres adquiridos", "Selección natural", "Generación espontánea"], c:2, e:"Establece que los individuos mejor adaptados a su entorno tienen más probabilidades de sobrevivir y reproducirse."},
+            {s:'biologia', q:"Cruza un chícharo homocigoto dominante (AA) con un homocigoto recesivo (aa). Genotipo de la F1:", o:["100% Aa", "50% AA, 50% aa", "100% AA", "75% Aa, 25% aa"], c:0, e:"La primera generación (F1) hereda un alelo dominante 'A' y uno recesivo 'a', resultando en descendencia 100% heterocigota (Aa)."},
+            {s:'biologia', q:"Base nitrogenada presente en el ARN pero ausente en el ADN:", o:["Timina", "Guanina", "Citosina", "Uracilo"], c:3, e:"En el ARN, el Uracilo (U) reemplaza a la Timina (T) uniéndose con la Adenina (A)."},
+            {s:'biologia', q:"La mitosis produce ___ células hijas con ___ de cromosomas que la célula madre.", o:["4, la mitad", "2, el mismo número", "2, el doble", "4, el mismo número"], c:1, e:"Mitosis es división de células somáticas. Genera 2 células idénticas (diploides, igual número cromosómico)."},
+            {s:'biologia', q:"Relación simbiótica donde un organismo se beneficia y el otro no se afecta ni beneficia:", o:["Parasitismo", "Mutualismo", "Comensalismo", "Depredación"], c:2, e:"En el comensalismo, uno gana y al otro le da igual (ej. las rémoras nadando junto al tiburón)."},
+            {s:'biologia', q:"El reino que agrupa organismos procariotas (como las bacterias) es:", o:["Fungi", "Protista", "Monera", "Plantae"], c:2, e:"El Reino Monera es el único constituido exclusivamente por organismos procariotas unicelulares (sin núcleo verdadero)."},
+            {s:'biologia', q:"¿Cuál es la función principal de los ribosomas?", o:["Almacenar ADN", "Digestión celular", "Síntesis de proteínas", "Producción de lípidos"], c:2, e:"Los ribosomas 'leen' el ARN mensajero y ensamblan aminoácidos para sintetizar proteínas."},
+            {s:'biologia', q:"Etapa de la respiración aerobia que produce la mayor cantidad de ATP:", o:["Glucólisis", "Ciclo de Krebs", "Fase oscura", "Cadena transportadora de electrones"], c:3, e:"La cadena transportadora de electrones (junto con la quimiósmosis) genera aproximadamente 32-34 ATP por molécula de glucosa."},
+            {s:'biologia', q:"Mecanismo de especiación que ocurre por aislamiento geográfico:", o:["Especiación simpátrica", "Especiación alopátrica", "Selección artificial", "Deriva génica"], c:1, e:"'Alos' significa 'otro' y 'patria' lugar. Una barrera física separa la población y evolucionan distinto."},
+            {s:'biologia', q:"Organismo autotrófo base de la cadena alimenticia en ecosistemas terrestres:", o:["Consumidores primarios", "Descomponedores", "Productores", "Depredadores tope"], c:2, e:"Las plantas y otros autotrófos fotosintéticos producen la materia orgánica inicial de la red trófica."},
+            {s:'biologia', q:"Componente estructural primario de la pared celular de las plantas:", o:["Quitina", "Glucógeno", "Colágeno", "Celulosa"], c:3, e:"La celulosa es un polisacárido que otorga rigidez y soporte a las paredes celulares vegetales."},
+            // -- YA ESTABAN --
             {s:'biologia', q:"Científico que en 1665 acuñó el nombre de 'célula' tras observar cortes de corcho en un microscopio:", o:["Theodor Schwann", "Robert Brown", "Robert Hooke", "Charles Darwin"], c:2, e:"Robert Hooke observó cavidades en el corcho que le recordaron a las celdillas de los monjes, llamándolas 'células'."},
             {s:'biologia', q:"Postulado de la Teoría Celular que afirma que 'Toda célula proviene de otra preexistente' (Omnis cellula e cellula):", o:["Rudolf Virchow", "Louis Pasteur", "Robert Hooke", "James Watson"], c:0, e:"Virchow completó la teoría celular de Schleiden y Schwann con este crucial postulado sobre la división celular."},
             {s:'biologia', q:"Los carbohidratos, como la glucosa, son fundamentales para la vida terrestre principalmente porque:", o:["Son fáciles de conseguir en la naturaleza", "La energía de sus enlaces proporciona gran parte de la energía vital", "Son producidos por animales pluricelulares", "Poseen un sabor dulce indispensable"], c:1, e:"Los enlaces químicos de los carbohidratos se rompen durante la respiración celular para liberar energía inmediata (ATP)."},
@@ -202,8 +275,33 @@
             {s:'biologia', q:"Vía metabólica que ocurre en el citoplasma y degrada la glucosa en dos moléculas de piruvato sin usar oxígeno:", o:["Ciclo de Krebs", "Glucólisis", "Fosforilación oxidativa", "Ciclo de Calvin"], c:1, e:"La glucólisis es la fase inicial tanto de la respiración celular aerobia como de la fermentación anaerobia."},
             {s:'biologia', q:"¿Cuál de los siguientes NO es un postulado de la teoría celular clásica?", o:["Todos los seres vivos están formados por células", "La célula es la unidad fisiológica de la vida", "Toda célula posee un núcleo definido por membrana", "Toda célula proviene de otra preexistente"], c:2, e:"Las células procariotas (como las bacterias) NO poseen un núcleo definido por membrana, por lo tanto, no es un postulado universal."},
             {s:'biologia', q:"Nivel de organización que agrupa a un conjunto de individuos de la MISMA especie que habitan una misma área:", o:["Comunidad", "Bioma", "Ecosistema", "Población"], c:3, e:"Una población se refiere estrictamente a miembros de una misma especie interactuando en un lugar."},
+            // -- NUEVAS BIOLOGÍA --
+            {s:'biologia', q:"Teoría que sostiene que la vida surge mágicamente de la materia inerte:", o:["Generación espontánea", "Panspermia", "Quimiosintética", "Celular"], c:0, e:"La Generación Espontánea (abiogénesis) fue una antigua creencia de que la vida animal surgía automáticamente de desechos."},
+            {s:'biologia', q:"Teoría propuesta por Lynn Margulis que explica la aparición de células eucariotas mediante la incorporación de procariontes:", o:["Sintética", "Acoplamiento", "Mutación", "Endosimbiótica"], c:3, e:"La teoría endosimbiótica propone que organelos como mitocondrias fueron alguna vez bacterias libres fagocitadas por otra célula."},
+            {s:'biologia', q:"¿Cuál de las siguientes es una molécula inorgánica necesaria para la vida?", o:["ADN", "Agua", "Glucosa", "Proteína"], c:1, e:"El agua es un compuesto inorgánico (sin enlaces carbono-carbono) y es el solvente universal metabólico."},
+            {s:'biologia', q:"Indica la función biológica principal de las trompas de Falopio en mamíferos:", o:["Producción de hormonas", "Lugar de fecundación", "Implantación del embrión", "Producción de óvulos"], c:1, e:"Las trompas transportan el óvulo, y es en su tercio externo donde normalmente ocurre la fecundación por el espermatozoide."},
+            {s:'biologia', q:"El anabolismo es un conjunto de reacciones metabólicas que ___ moléculas complejas a partir de moléculas simples.", o:["sintetiza", "degrada", "acomoda", "simplifica"], c:0, e:"El metabolismo se divide en catabolismo (degradación) y anabolismo (síntesis o construcción, que requiere ATP)."},
+            {s:'biologia', q:"Técnica de laboratorio que consiste en extender una muestra biológica sobre un portaobjetos para su análisis microscópico:", o:["Cultivo celular", "Frotis", "Centrifugación", "Cromatografía"], c:1, e:"El frotis o extendido permite separar y fijar las células en una capa delgada para teñirlas y analizarlas ópticamente."},
+            // ==========================================
+            // BLOQUE DE EXPANSIÓN: BIOLOGÍA (Reactivos 16 al 30)
+            // ==========================================
+            {s:'biologia', q:"Son las biomoléculas especializadas, responsables de almacenar y transmitir la información genética de una generación a otra:", o:["Lípidos", "Ácidos nucleicos", "Proteínas", "Carbohidratos"], c:1, e:"El ADN y el ARN (que forman la familia de los ácidos nucleicos) contienen las bases nitrogenadas que codifican todas las instrucciones de los seres vivos."},
+            {s:'biologia', q:"La función principal de una enzima dentro de las rutas metabólicas es:", o:["Proporcionar energía neta al sistema", "Actuar como biocatalizador para acelerar la reacción", "Aumentar la temperatura intracelular", "Detener el desgaste de la membrana celular"], c:1, e:"Las enzimas son proteínas globulares que actúan como catalizadores biológicos. Funcionan disminuyendo la energía de activación, lo que acelera drásticamente las reacciones sin consumirse."},
+            {s:'biologia', q:"Estructuras anatómicas que tienen un origen embrionario común pero que en la actualidad realizan funciones distintas (ej. brazo humano y aleta de ballena):", o:["Órganos homólogos", "Órganos análogos", "Órganos vestigiales", "Órganos convergentes"], c:0, e:"La homología anatómica es prueba de evolución divergente. A pesar de verse diferentes por adaptación al medio, su estructura ósea básica proviene del mismo ancestro."},
+            {s:'biologia', q:"¿En qué región estructural de la célula eucariota se lleva a cabo el Ciclo de Krebs?", o:["Citoplasma", "Aparato de Golgi", "Matriz mitocondrial", "Membrana plasmática"], c:2, e:"Mientras que el primer paso (glucólisis) ocurre en el citoplasma, el Ciclo de Krebs (o del ácido cítrico) tiene lugar exclusivamente dentro de la matriz de las mitocondrias."},
+            {s:'biologia', q:"Es un modelo ecológico compuesto por múltiples cadenas tróficas interconectadas, el cual representa el flujo real de energía en un ecosistema:", o:["Nicho ecológico", "Pirámide de biomasa", "Red alimentaria (trófica)", "Biocenosis"], c:2, e:"Las redes tróficas son modelos mucho más realistas y complejos que las cadenas lineales aisladas, ya que demuestran que un organismo suele alimentarse de múltiples fuentes."},
+            {s:'biologia', q:"Según la genética mendeliana, a las formas alternativas (variantes) que puede tener un mismo gen situado en el mismo locus se les denomina:", o:["Cromátidas", "Locus", "Alelos", "Fenotipos"], c:2, e:"Un alelo es cada una de las versiones que codifican un rasgo. Por ejemplo, el gen para el color de semilla tiene un alelo para 'amarillo' y otro alelo diferente para 'verde'."},
+            {s:'biologia', q:"Tipo de reproducción asexual mediante la cual un organismo unicelular se divide en dos células hijas exactamente idénticas (muy común en bacterias):", o:["Gemación", "Bipartición (Fisión binaria)", "Esporulación", "Partenogénesis"], c:1, e:"La fisión binaria o bipartición es el mecanismo de clonación natural por el cual los procariontes replican su ADN y se dividen rápidamente."},
+            {s:'biologia', q:"Reino biológico compuesto por organismos eucariotas, estrictamente heterótrofos, con pared celular compuesta de quitina y que se reproducen por esporas:", o:["Plantae", "Animalia", "Protista", "Fungi"], c:3, e:"El reino Fungi (los hongos) posee estas características exclusivas, lo que llevó a separarlos de las plantas (las cuales son autótrofas y tienen pared celular de celulosa)."},
+            {s:'biologia', q:"Organelo celular membranoso encargado de empaquetar, modificar y distribuir proteínas y lípidos hacia su destino final (fuera o dentro de la célula):", o:["Retículo endoplásmico liso", "Lisosoma", "Aparato de Golgi", "Ribosoma"], c:2, e:"El Aparato de Golgi funciona como el sistema de paquetería celular. Recibe vesículas del retículo, las modifica y las etiqueta para enviarlas a donde se necesiten."},
+            {s:'biologia', q:"¿Cuál es el principal producto final de la fotosíntesis que la planta utiliza directamente como fuente de energía estructural y metabólica?", o:["Oxígeno ($O_2$)", "Agua ($H_2O$)", "Glucosa ($C_6H_{12}O_6$)", "Dióxido de carbono ($CO_2$)"], c:2, e:"El oxígeno es solo un gas de desecho (subproducto) de la fotosíntesis. El verdadero objetivo metabólico de la planta es sintetizar carbohidratos (glucosa) para sobrevivir."},
+            {s:'biologia', q:"Células sanguíneas especializadas en el transporte masivo de oxígeno y dióxido de carbono gracias a la proteína hemoglobina:", o:["Leucocitos", "Plaquetas", "Eritrocitos (Glóbulos rojos)", "Macrófagos"], c:2, e:"Los eritrocitos carecen de núcleo y organelos en su etapa madura para maximizar el espacio disponible para almacenar moléculas de hemoglobina."},
+            {s:'biologia', q:"Condición genética (aneuploidía) en la cual un individuo humano posee tres cromosomas en lugar del par normal en la posición 21:", o:["Síndrome de Turner", "Síndrome de Klinefelter", "Síndrome de Down", "Daltonismo"], c:2, e:"El Síndrome de Down es causado por una no disyunción meiótica, generando una trisomía en el cromosoma 21, dando un total de 47 cromosomas en las células somáticas."},
+            {s:'biologia', q:"El ciclo biogeoquímico gaseoso en el que participan intensamente las bacterias fijadoras (como Rhizobium) que habitan en las raíces de las leguminosas es el ciclo del:", o:["Carbono", "Fósforo", "Agua", "Nitrógeno"], c:3, e:"Aunque la atmósfera es 78% nitrógeno, ni plantas ni animales pueden respirarlo. Estas bacterias lo 'fijan' transformándolo en amoniaco y nitratos asimilables para la biosfera."},
+            {s:'biologia', q:"La inoculación de antígenos atenuados mediante vacunas proporciona a los humanos un tipo de inmunidad catalogada como:", o:["Activa artificial", "Activa natural", "Pasiva natural", "Pasiva artificial"], c:0, e:"Es activa porque estimula al sistema inmunológico del paciente a producir sus propios anticuerpos (memoria), y es artificial porque se induce médicamente."},
+            {s:'biologia', q:"La teoría quimiosintética sobre el origen de la vida, que postula la síntesis prebiótica a partir de un caldo primitivo, fue propuesta de manera independiente por:", o:["Watson y Crick", "Oparin y Haldane", "Darwin y Wallace", "Miller y Urey"], c:1, e:"Alexander Oparin y John Haldane teorizaron en la década de 1920 que la vida surgió de reacciones químicas graduales, hipótesis que más tarde demostraron experimentalmente Miller y Urey."},
 
-            // HISTORIA 
+            // HISTORIA (15)
             {s:'historia', q:"Tratado que dio fin oficial a la Primera Guerra Mundial e impuso duras sanciones a Alemania:", o:["Tratado de Versalles", "Tratado de Tordesillas", "Tratado de Yalta", "Pacto de Varsovia"], c:0, e:"Firmado en 1919, desmanteló el ejército alemán e impuso deudas impagables, sentando las bases de la 2da Guerra."},
             {s:'historia', q:"Periodo de México en el que Plutarco Elías Calles controló la presidencia sin ser el presidente en turno:", o:["Porfiriato", "Reforma", "El Maximato", "Guerra Cristera"], c:2, e:"Calles se autoproclamó 'Jefe Máximo de la Revolución' y controló a tres presidentes (1928-1934)."},
             {s:'historia', q:"Causa inmediata del inicio de la Segunda Guerra Mundial en 1939:", o:["Asesinato del Archiduque Francisco Fernando", "Bombardeo a Pearl Harbor", "Invasión de Alemania a Polonia", "Guerra Civil Española"], c:2, e:"La invasión de Polonia (1 septiembre 1939) provocó que Francia y Gran Bretaña declararan la guerra a la Alemania nazi."},
@@ -219,8 +317,14 @@
             {s:'historia', q:"Guerra que México enfrentó por el impago de su deuda externa con Francia (1862-1867):", o:["Guerra de los Pasteles", "Guerra de Castas", "Segunda Intervención Francesa", "Guerra Cristera"], c:2, e:"Resultó en el efímero Segundo Imperio Mexicano bajo el mando de Maximiliano de Habsburgo."},
             {s:'historia', q:"Movimiento filosófico del siglo XVIII que impulsó el uso de la razón y el conocimiento científico:", o:["Renacimiento", "Romanticismo", "La Ilustración", "Positivismo"], c:2, e:"La Ilustración, o 'Siglo de las Luces', cuestionó el poder monárquico y religioso, fundamentando las revoluciones burguesas."},
             {s:'historia', q:"Etapa de tensión política mundial donde hubo carrera armamentista y conquista espacial sin enfrentamiento bélico directo:", o:["Paz Armada", "Guerra Fría", "Imperialismo", "Guerra de los Balcanes"], c:1, e:"La Guerra Fría (1947-1991) enfrentó indirectamente al bloque capitalista y comunista en escenarios periféricos y tecnológicos."},
+            // -- NUEVAS HISTORIA --
+            {s:'historia', q:"El Tratado de Londres de 1861, firmado por Inglaterra, Francia y España tenía como objetivo:", o:["Ofrecer el trono de México a Maximiliano", "Presionar a Juárez para retirar la moratoria al pago de deuda externa", "Decretar una monarquía católica", "Evitar invasiones estadounidenses"], c:1, e:"Juárez suspendió el pago de la deuda. Estas potencias se aliaron para exigir el pago (derivando en la Intervención Francesa)."},
+            {s:'historia', q:"Una de las principales causas ocultas que provocaron la Segunda Intervención Francesa a México fue:", o:["La liquidación de la deuda externa", "La anexión de Texas a EE.UU.", "El interés imperialista de Francia en América", "La oposición a los conservadores"], c:2, e:"Más allá de la deuda, Napoleón III buscaba frenar a Estados Unidos y establecer una zona de influencia francesa en América."},
+            {s:'historia', q:"¿Cuál fue el objetivo central de la Conferencia de Berlín (1884-1885)?", o:["El libre comercio en América", "Firmar la paz de Napoleón", "Crear la Sociedad de Naciones", "Organizar el reparto colonial de África entre potencias"], c:3, e:"Para evitar conflictos bélicos entre las potencias imperialistas, se sentaron a dividirse el continente africano con mapa en mano."},
+            {s:'historia', q:"Ordena cronológicamente: I. Expropiación Petrolera, II. Matanza de Tlatelolco, III. Inicio de la Revolución Mexicana, IV. Constitución actual.", o:["III, IV, I, II", "IV, III, II, I", "III, I, IV, II", "I, III, IV, II"], c:0, e:"Revolución (1910) -> Constitución (1917) -> Expropiación Petrolera (1938) -> Tlatelolco (1968)."},
+            {s:'historia', q:"La política de reformas conocida como Perestroika y Glasnost fue la principal causa interna de:", o:["El éxito del modelo económico chino", "La desintegración de la Unión Soviética (URSS)", "La invasión de Estados Unidos", "La creación del Muro de Berlín"], c:1, e:"Gorbachov buscaba reestructurar la economía (Perestroika) y dar transparencia (Glasnost), pero aceleraron el colapso soviético."},
 
-            // GEOGRAFÍA 
+             // GEOGRAFÍA 
             {s:'geografia', q:"¿Qué país se formó en Europa tras la violenta desintegración de Yugoslavia en la década de los 90?", o:["Ucrania", "Croacia", "Polonia", "Checoslovaquia"], c:1, e:"Yugoslavia se fragmentó en varios países: Croacia, Serbia, Eslovenia, Bosnia, Macedonia y Montenegro."},
             {s:'geografia', q:"Las costas de los estados de Tamaulipas, Veracruz y Tabasco son bañadas por las aguas de:", o:["El Océano Pacífico", "El Mar Caribe", "El Golfo de México", "El Golfo de California"], c:2, e:"Estos estados conforman la principal llanura costera del oriente de México hacia el Golfo de México."},
             {s:'geografia', q:"Tipo de clima predominante en la Península de Yucatán, de acuerdo con el sistema de Köppen:", o:["Seco desértico", "Templado con lluvias en invierno", "Cálido subhúmedo con lluvias en verano", "Polar de Tundra"], c:2, e:"La península es tropical, cálida y recibe fuertes lluvias durante el verano y el paso de huracanes."},
@@ -237,7 +341,7 @@
             {s:'geografia', q:"La cordillera de los Andes, la más larga del mundo, se localiza en:", o:["América del Sur", "Asia Central", "Norteamérica", "Europa Oriental"], c:0, e:"Recorre toda la costa occidental de Sudamérica, atravesando países como Chile, Perú, Ecuador y Colombia."},
             {s:'geografia', q:"Fenómeno climático que causa un calentamiento anómalo en las aguas del Océano Pacífico Ecuatorial, alterando el clima global:", o:["Efecto Invernadero", "La Niña", "El Niño", "Cambio Climático"], c:2, e:"El Niño (ENSO) calienta el Pacífico, causando sequías en unas regiones e inundaciones severas en otras."},
 
-            // COMPRENSIÓN ESCRITA (ESPAÑOL)
+            // COMPRENSIÓN ESCRITA (ESPAÑOL) (15)
             {s:'escrita', q:"Identifica la oración con concordancia correcta:", o:["Hubieron muchas personas en la fiesta.", "Hubo muchas personas en la fiesta.", "Habían varias personas en la fiesta.", "Han habidos personas en la fiesta."], c:1, e:"El verbo 'haber' es impersonal cuando indica existencia; siempre se conjuga en tercera persona singular (hubo, había)."},
             {s:'escrita', q:"Función de la lengua que busca convencer, persuadir o influir en el receptor:", o:["Función referencial", "Función poética", "Función fática", "Función apelativa"], c:3, e:"La función apelativa o conativa se centra en el receptor, usada comúnmente en discursos políticos y publicidad."},
             {s:'escrita', q:"Elige el nexo coordinante adversativo en la oración: 'Estudió mucho, ___ no aprobó el examen'.", o:["porque", "así que", "pero", "y"], c:2, e:"Los nexos adversativos oponen ideas (pero, mas, sin embargo, sino)."},
@@ -253,8 +357,14 @@
             {s:'escrita', q:"Uso correcto de letras (s, c, z): La mujer tomó una ___ de café y salió de ___.", o:["taza / caza", "tasa / casa", "taza / casa", "tasa / caza"], c:2, e:"Taza (recipiente para beber). Casa (vivienda). (Tasa es índice/impuesto, Caza es atrapar animales)."},
             {s:'escrita', q:"¿Cuál de estas oraciones es compuesta coordinada copulativa?", o:["Te llamé pero no respondiste.", "Iré al cine y comeré palomitas.", "Estudias o trabajas.", "Dijo que vendría pronto."], c:1, e:"Las copulativas unen información sumando elementos usando los nexos: y, e, ni."},
             {s:'escrita', q:"Signo de puntuación que separa oraciones independientes que tienen relación de sentido:", o:["Coma", "Punto y seguido", "Punto y coma", "Dos puntos"], c:2, e:"El punto y coma (;) establece una pausa mayor que la coma y menor que el punto, usada para enlazar oraciones estrechamente relacionadas."},
+             // -- NUEVAS ESCRITA --
+            {s:'escrita', q:"Identifica el vicio del lenguaje en: 'Hoy, ponemos a la venta ropa para niños, damas y caballeros de segunda mano...'", o:["De ortografía", "De sintaxis", "De ambigüedad (Anfibología)", "De fonética"], c:2, e:"Es ambiguo porque por mala construcción no queda claro si la ropa es de segunda mano, o si los 'caballeros' son de segunda mano."},
+            {s:'escrita', q:"La frase 'te lo devuelvo a repetir' es un claro ejemplo del vicio conocido como:", o:["Error ortográfico", "Pleonasmo", "Enunciado ambiguo", "Sintaxis"], c:1, e:"Un pleonasmo usa palabras innecesarias. 'Repetir' ya implica volver a hacer algo, por lo que 'devuelvo a repetir' es redundante."},
+            {s:'escrita', q:"Analiza la analogía: 'Orden es a biblioteca como:'", o:["Cabello a listón", "Higiene a consultorio", "Cepillo a dientes", "Lodo a barro"], c:1, e:"Una biblioteca requiere 'orden' como característica esencial para funcionar; de igual manera, un consultorio médico exige 'higiene'."},
+            {s:'escrita', q:"Elige la analogía que corresponde con 'Cuerda es a guitarra'", o:["Arco a violín", "Piel a tambor", "Tecla a piano", "Dedos a arpa"], c:2, e:"La cuerda se acciona mecánicamente para producir el sonido en la guitarra; la tecla cumple esa misma función estructural en un piano."},
+            {s:'escrita', q:"¿Cuál de los siguientes pares de palabras son antónimos entre sí?", o:["Ordinario - falaz", "Inerte - dinámico", "Fúnebre - tétrico", "Confeso - ilógico"], c:1, e:"Inerte significa estático, sin movimiento o vida. Dinámico, en cambio, es algo que tiene mucha actividad, movimiento o energía."},
 
-            // LECTURA / LITERATURA 
+            // LECTURA / LITERATURA (15)
             {s:'lectura', q:"Corriente literaria del siglo XIX que busca reflejar la realidad social de forma objetiva, cruda y descriptiva:", o:["Romanticismo", "Realismo", "Vanguardismo", "Modernismo"], c:1, e:"El Realismo se opone a los excesos sentimentales del Romanticismo, enfocándose en problemas sociales de la clase media/baja."},
             {s:'lectura', q:"Premisa 1: Todos los planetas giran alrededor del sol. Premisa 2: Marte es un planeta. Conclusión deductiva:", o:["El sol gira alrededor de Marte.", "Marte gira alrededor del sol.", "Algunos planetas son como Marte.", "Marte no gira alrededor del sol."], c:1, e:"Es un silogismo deductivo básico: lo que aplica a la totalidad aplica al individuo (Marte)."},
             {s:'lectura', q:"Identifica el género literario en el que el autor expresa de forma subjetiva sus sentimientos íntimos (ej. Odas, Sonetos):", o:["Épico", "Lírico", "Dramático", "Didáctico"], c:1, e:"El género lírico (poesía) transmite emociones y sentimientos, originado por los griegos al recitar versos con una lira."},
@@ -269,10 +379,16 @@
             {s:'lectura', q:"En 'Cien años de soledad', ¿a qué se refiere el término 'Realismo Mágico'?", o:["Mostrar la magia como una ilusión", "Introducir elementos fantásticos o irreales como algo cotidiano", "Hacer magia real mediante tecnología", "Ignorar la realidad por completo"], c:1, e:"Es la principal característica estética de García Márquez, donde lo sobrenatural se narra con absoluta naturalidad."},
             {s:'lectura', q:"'Sus cabellos son oro' es metáfora; 'Sus cabellos son COMO oro' es:", o:["Paradoja", "Metonimia", "Símil (o comparación)", "Prosopopeya"], c:2, e:"El símil establece una comparación explícita usando nexos comparativos: como, cual, parece, igual a."},
             {s:'lectura', q:"Tono de un texto que utiliza burlas sutiles para criticar algo, diciendo lo contrario de lo que se piensa:", o:["Didáctico", "Melancólico", "Irónico", "Informativo"], c:2, e:"La ironía es un recurso retórico que se usa a menudo como herramienta de crítica social o humor mordaz."},
-            {s:'lectura', q:"Obra cumbre de la épica castellana medieval (Cantar de gesta):", o:["Don Quijote de la Mancha", "El Cantar de Mio Cid", "La Divina Comedia", "El Laberinto de la Soledad"], c:1, e:"Es el primer gran poema épico conservado de la literatura española, basado en la vida del caballero Rodrigo Díaz de Vivar."}
+            {s:'lectura', q:"Obra cumbre de la épica castellana medieval (Cantar de gesta):", o:["Don Quijote de la Mancha", "El Cantar de Mio Cid", "La Divina Comedia", "El Laberinto de la Soledad"], c:1, e:"Es el primer gran poema épico conservado de la literatura española, basado en la vida del caballero Rodrigo Díaz de Vivar."},
+             // -- NUEVAS LECTURA --
+            {s:'lectura', q:"¿A qué se refiere el autor en el fragmento? 'Un hombre de ojos grises y barba gris... Humildemente busca la muerte como quien busca el sueño.'", o:["Sus ojos grises lo hacen parecer más cansado", "Busca alivio en el descanso temporal de una siesta", "Lleno de rencor desea la muerte", "Consciente de su vejez, desea morir para encontrar alivio"], c:3, e:"La asociación de los cabellos grises y 'buscar la muerte como el sueño' remite a la vejez y a la aceptación serena del final del ciclo."},
+            {s:'lectura', q:"¿Cuál es uno de los propósitos principales de los textos funcionales o instructivos?", o:["Informar sobre sucesos recientes", "Brindar información necesaria para realizar un trabajo o resolver un problema", "Expresar sentimientos poéticos", "Criticar una postura política"], c:1, e:"Los textos funcionales (manuales, recetas, guías) tienen una función apelativa; te dicen paso a paso cómo hacer o ensamblar algo útil."},
+            {s:'lectura', q:"Las siguientes son características estructurales de un texto del género dramático (teatro), EXCEPTO:", o:["Uso de diálogos", "Expresa una crítica forzosamente", "Tiene acotaciones de escena", "Su fin es ser representado en un escenario"], c:1, e:"Cualquier género literario puede expresar una crítica. Sin embargo, los diálogos, las acotaciones y la intención teatral son el ADN del drama."}
+        
         ];
 
-        // --- ESTADO DE LA APP ---
+
+   // --- ESTADO DE LA APP ---
         let userQuestions = [];
         let activeQuestions = [];
         let currentQuestionIndex = 0;
@@ -295,7 +411,6 @@
         const navQuiz = document.getElementById('nav-quiz');
         const navStats = document.getElementById('nav-stats');
 
-        // --- INICIALIZACIÓN ---
         function initApp() {
             const saved = localStorage.getItem('lockin_user_qs');
             if (saved) {
@@ -304,7 +419,6 @@
             goHome(); 
         }
 
-        // --- NAVEGACIÓN ---
         function setActiveNav(tab) {
             navQuiz.classList.remove('text-rose-600');
             navStats.classList.remove('text-rose-600');
@@ -347,7 +461,6 @@
             appContainer.innerHTML = html;
         }
 
-        // --- SISTEMA DE ESTADÍSTICAS ---
         function saveSessionStat(subject, score, total) {
             let history = JSON.parse(localStorage.getItem('lockin_stats')) || [];
             history.push({
@@ -421,7 +534,6 @@
         }
 
         function clearStats() {
-            // Usando el modal personalizado en lugar del "confirm()" de iOS
             showModal(
                 "Borrar Progreso", 
                 "¿Estás seguro de que quieres borrar todo tu historial de aciertos y errores? Esto no se puede deshacer.", 
@@ -433,7 +545,6 @@
             );
         }
 
-        // --- MOTOR DEL QUIZ ---
         function startQuiz(subject) {
             currentSubject = subject;
             
@@ -445,7 +556,14 @@
                 return;
             }
             
-            activeQuestions = rawQuestions.sort(() => Math.random() - 0.5);
+            // Mezclador (Fisher-Yates) para que salgan siempre aleatorias en cada intento
+            for (let i = rawQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [rawQuestions[i], rawQuestions[j]] = [rawQuestions[j], rawQuestions[i]];
+            }
+            
+            // Usamos un set de 15 preguntas como máximo por sesión de estudio
+            activeQuestions = rawQuestions.slice(0, 10);
             
             currentQuestionIndex = 0;
             score = 0;
@@ -595,7 +713,6 @@
             appContainer.innerHTML = html;
         }
 
-        // --- CREADOR DE PREGUNTAS ---
         function renderAddQuestion() {
             scoreDisplay.classList.add('hidden');
             let subjOptions = '';
@@ -694,7 +811,6 @@
             });
         }
 
-        // Iniciar
         window.onload = initApp;
     </script>
 </body>
