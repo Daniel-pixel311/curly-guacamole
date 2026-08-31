@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOCK IN PRO MAX</title>
+    <title>PINCHE DANIEL ESTUDIA CABRÓN</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LOCK IN MAX">
+    <meta name="apple-mobile-web-app-title" content="DANIEL ESTUDIA">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f172a'/%3E%3Ctext y='70' x='20' font-size='60'%3E🔥%3C/text%3E%3C/svg%3E">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,7 +27,7 @@
             font-family: 'Nunito', sans-serif;
             overscroll-behavior-y: contain;
             -webkit-tap-highlight-color: transparent;
-            background-color: #f1f5f9;
+            background-color: #fffbea;
         }
         @keyframes pop {
             0% { transform: scale(0.95); opacity: 0;}
@@ -35,14 +35,16 @@
         }
         .animate-pop { animation: pop 0.3s ease-out forwards; }
         
-        .tile-matematicas { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-        .tile-fisica { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
-        .tile-quimica { background: linear-gradient(135deg, #059669, #047857); }
-        .tile-biologia { background: linear-gradient(135deg, #65a30d, #4d7c0f); }
-        .tile-historia { background: linear-gradient(135deg, #d97706, #b45309); }
-        .tile-geografia { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-        .tile-escrita { background: linear-gradient(135deg, #db2777, #be185d); }
-        .tile-lectura { background: linear-gradient(135deg, #0891b2, #0e7490); }
+        .tile-matematicas, .tile-fisica, .tile-quimica, .tile-biologia,
+        .tile-historia, .tile-geografia, .tile-escrita, .tile-lectura {
+            background: linear-gradient(145deg, #18181b, #09090b);
+            border: 2px solid #facc15;
+            box-shadow: 0 10px 24px rgba(24, 24, 27, 0.16);
+        }
+        .tile-matematicas:hover, .tile-fisica:hover, .tile-quimica:hover, .tile-biologia:hover,
+        .tile-historia:hover, .tile-geografia:hover, .tile-escrita:hover, .tile-lectura:hover {
+            box-shadow: 0 12px 30px rgba(250, 204, 21, 0.25);
+        }
 
         .btn-option:active { transform: scale(0.98); }
         .correct-answer { background-color: #10b981 !important; color: white !important; border-color: #059669 !important; }
@@ -54,11 +56,11 @@
 </head>
 <body class="text-slate-800 h-screen flex flex-col pb-safe">
 
-    <header class="bg-white shadow-sm sticky top-0 z-50 pt-safe">
+    <header class="bg-zinc-950 shadow-sm sticky top-0 z-50 pt-safe border-b-2 border-yellow-400">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2 cursor-pointer" onclick="goHome()">
-                <div class="text-2xl">🔥</div>
-                <h1 class="font-black text-xl tracking-tight text-slate-900">LOCK IN <span class="text-rose-600">MAX</span></h1>
+                <div class="text-2xl">⚡</div>
+                <h1 class="font-black text-base tracking-tight text-white">PINCHE DANIEL <span class="text-yellow-400">ESTUDIA CABRÓN</span></h1>
             </div>
             <div id="score-display" class="hidden font-bold text-lg text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
                 ⭐ 0
@@ -69,13 +71,13 @@
     <main class="flex-grow max-w-md w-full mx-auto overflow-y-auto mb-16" id="app-container">
     </main>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 pb-safe">
+    <nav class="fixed bottom-0 w-full bg-zinc-950 border-t-2 border-yellow-400 z-50 pb-safe">
         <div class="max-w-md mx-auto flex justify-around p-3">
-            <button onclick="goHome()" class="flex flex-col items-center text-slate-400 hover:text-rose-600 transition" id="nav-quiz">
+            <button onclick="goHome()" class="flex flex-col items-center text-zinc-400 hover:text-yellow-400 transition" id="nav-quiz">
                 <span class="text-xl mb-1">🎯</span>
                 <span class="text-[10px] font-bold uppercase tracking-wider">Quiz</span>
             </button>
-            <button onclick="renderStats()" class="flex flex-col items-center text-slate-400 hover:text-rose-600 transition" id="nav-stats">
+            <button onclick="renderStats()" class="flex flex-col items-center text-zinc-400 hover:text-yellow-400 transition" id="nav-stats">
                 <span class="text-xl mb-1">📈</span>
                 <span class="text-[10px] font-bold uppercase tracking-wider">Progreso</span>
             </button>
@@ -128,7 +130,7 @@
             }
         }
 
-        // --- MEGA BANCO DE PREGUNTAS (Nivel Examen UNAM/IPN) ---
+        // --- BANCO HEREDADO EN PROCESO DE REVISIÓN ---
         const examQuestions = [
             // MATEMÁTICAS (35)
             {s:'matematicas', q:"Calcula el límite: lim(x→0) sen(3x) / x", o:["0", "1", "3", "Indeterminado"], c:2, e:"Usando el límite notable lim(x→0) sen(kx)/x = k. Aquí k=3, por lo tanto el límite es 3."},
@@ -168,7 +170,6 @@
             {s:'matematicas', q:"El desarrollo del binomio $(2a+3ab)^2$ es:", o:["$a^2+6a^2b+9a^2b^2$", "$a^2+2a^2b+a^2b^2$", "$4a^2+4a^2b+a^2b^2$", "$4a^2+12a^2b+9a^2b^2$"], c:3, e:"El cuadrado del primero $(4a^2)$, más doble producto $(2 \\times 2a \\times 3ab = 12a^2b)$, más el cuadrado del segundo $(9a^2b^2)$."},
             {s:'matematicas', q:"Simplifica la siguiente expresión algebraica: $\\frac{4a^2-9b^2}{2a-3b}$", o:["$\\frac{1}{2a-3b}$", "$\\frac{1}{2a+3b}$", "$2a-3b$", "$2a+3b$"], c:3, e:"El numerador es diferencia de cuadrados: $(2a+3b)(2a-3b)$. Al dividirlo entre $(2a-3b)$, se cancelan los idénticos y queda $(2a+3b)$."},
 
-+
             // FÍSICA (18)
             {s:'fisica', q:"Si la distancia entre dos masas se reduce a la mitad, la fuerza gravitacional entre ellas:", o:["Se reduce a la mitad", "Se duplica", "Se cuadruplica", "No cambia"], c:2, e:"Fórmula: F = G(m1m2)/r². Si 'r' se divide entre 2, su cuadrado divide entre 4. Por ley de sándwich, la fuerza se multiplica por 4."},
             {s:'fisica', q:"Unidad de la potencia eléctrica en el Sistema Internacional:", o:["Voltio", "Amperio", "Joule", "Watt"], c:3, e:"La potencia (rapidez con la que se transfiere energía) se mide en Joules/segundo, que equivale a Watts."},
@@ -420,6 +421,105 @@
         
         ];
 
+        // --- EXPANSIÓN IPN: 10 REACTIVOS NUEVOS POR ÁREA ---
+        const ipnExpansionQuestions = [
+            // MATEMÁTICAS (10)
+            {s:'matematicas', tema:'jerarquia', nivel:'ipn', q:"Calcula: $18-2[3+(4-7)^2]$", o:["-6", "-18", "6", "42"], c:0, e:"Primero: (4-7)²=9; después 3+9=12; 2(12)=24 y 18-24=-6."},
+            {s:'matematicas', tema:'factorizacion', nivel:'ipn', q:"Factoriza completamente $x^3-4x^2-x+4$.", o:["$(x-4)(x^2-1)$", "$(x-1)(x+1)(x-4)$", "$(x+4)(x-1)^2$", "$(x-4)(x+1)^2$"], c:1, e:"Por agrupación: x²(x-4)-1(x-4)=(x²-1)(x-4)=(x-1)(x+1)(x-4)."},
+            {s:'matematicas', tema:'ecuaciones', nivel:'ipn', q:"Las raíces de $2x^2-5x-3=0$ son:", o:["3 y -1/2", "-3 y 1/2", "3 y 1/2", "-3 y -1/2"], c:0, e:"(2x+1)(x-3)=0, por lo que x=-1/2 o x=3."},
+            {s:'matematicas', tema:'funciones', nivel:'ipn', q:"Si $f(x)=\frac{x-1}{x+2}$, ¿cuál valor no pertenece a su dominio?", o:["-2", "-1", "0", "2"], c:0, e:"El denominador no puede ser cero: x+2=0 cuando x=-2."},
+            {s:'matematicas', tema:'trigonometria', nivel:'ipn', q:"En un triángulo rectángulo, $\tan\theta=3/4$. Si la hipotenusa mide 20, el cateto opuesto mide:", o:["8", "12", "15", "16"], c:1, e:"La razón 3-4-5 escalada por 4 produce lados 12, 16 y 20; el opuesto es 12."},
+            {s:'matematicas', tema:'geometria_analitica', nivel:'ipn', q:"La ecuación de la recta que pasa por (2,-1) y tiene pendiente 3 es:", o:["$y=3x-7$", "$y=3x+5$", "$y=-3x+5$", "$y=2x-5$"], c:0, e:"Usando y-y₁=m(x-x₁): y+1=3(x-2), de donde y=3x-7."},
+            {s:'matematicas', tema:'sucesiones', nivel:'ipn', q:"En la sucesión aritmética 7, 11, 15, ... ¿cuál es el término 20?", o:["79", "81", "83", "87"], c:2, e:"a₂₀=7+(20-1)(4)=7+76=83."},
+            {s:'matematicas', tema:'probabilidad', nivel:'ipn', q:"Una urna contiene 4 bolas rojas y 6 azules. Al extraer dos sin reemplazo, la probabilidad de que ambas sean rojas es:", o:["2/15", "4/25", "1/5", "8/45"], c:0, e:"P=(4/10)(3/9)=12/90=2/15."},
+            {s:'matematicas', tema:'limites', nivel:'ipn', q:"Evalúa $\lim_{x\to2}\frac{x^2-4}{x-2}$.", o:["0", "2", "4", "No existe"], c:2, e:"x²-4=(x-2)(x+2); al simplificar y evaluar queda 2+2=4."},
+            {s:'matematicas', tema:'derivadas', nivel:'ipn', q:"La pendiente de la tangente a $f(x)=x^3-2x$ en x=2 es:", o:["8", "10", "12", "14"], c:1, e:"f'(x)=3x²-2; f'(2)=12-2=10."},
+
+            // FÍSICA (10)
+            {s:'fisica', tema:'cinematica', nivel:'ipn', q:"Un automóvil parte del reposo con aceleración constante de 3 m/s². ¿Qué velocidad alcanza en 8 s?", o:["11 m/s", "21 m/s", "24 m/s", "32 m/s"], c:2, e:"v=v₀+at=0+(3)(8)=24 m/s."},
+            {s:'fisica', tema:'cinematica', nivel:'ipn', q:"Un móvil viaja a 20 m/s durante 15 s. Si su velocidad es constante, recorre:", o:["35 m", "150 m", "300 m", "450 m"], c:2, e:"d=vt=(20)(15)=300 m."},
+            {s:'fisica', tema:'dinamica', nivel:'ipn', q:"Una fuerza neta de 18 N actúa sobre una masa de 6 kg. Su aceleración es:", o:["2 m/s²", "3 m/s²", "6 m/s²", "108 m/s²"], c:1, e:"Por la segunda ley de Newton, a=F/m=18/6=3 m/s²."},
+            {s:'fisica', tema:'trabajo', nivel:'ipn', q:"Una fuerza horizontal de 50 N desplaza una caja 4 m en su misma dirección. El trabajo realizado es:", o:["12.5 J", "46 J", "54 J", "200 J"], c:3, e:"W=Fd cos0°=(50)(4)=200 J."},
+            {s:'fisica', tema:'energia', nivel:'ipn', q:"¿Qué energía potencial gravitatoria tiene una masa de 2 kg a 5 m de altura? Usa g=9.8 m/s².", o:["49 J", "98 J", "100 J", "196 J"], c:1, e:"Ep=mgh=(2)(9.8)(5)=98 J."},
+            {s:'fisica', tema:'cantidad_movimiento', nivel:'ipn', q:"El momento lineal de un objeto de 4 kg que se mueve a 6 m/s es:", o:["1.5 kg·m/s", "10 kg·m/s", "24 kg·m/s", "48 kg·m/s"], c:2, e:"p=mv=(4)(6)=24 kg·m/s."},
+            {s:'fisica', tema:'fluidos', nivel:'ipn', q:"La presión ejercida por una fuerza de 120 N sobre un área de 0.30 m² es:", o:["36 Pa", "90 Pa", "400 Pa", "600 Pa"], c:2, e:"P=F/A=120/0.30=400 Pa."},
+            {s:'fisica', tema:'electricidad', nivel:'ipn', q:"Por una resistencia de 8 Ω circula una corriente de 3 A. El voltaje es:", o:["8/3 V", "11 V", "24 V", "72 V"], c:2, e:"Ley de Ohm: V=IR=(3)(8)=24 V."},
+            {s:'fisica', tema:'circuitos', nivel:'ipn', q:"Dos resistencias de 6 Ω y 3 Ω conectadas en paralelo tienen resistencia equivalente de:", o:["2 Ω", "3 Ω", "4.5 Ω", "9 Ω"], c:0, e:"1/Req=1/6+1/3=3/6=1/2; por tanto Req=2 Ω."},
+            {s:'fisica', tema:'ondas', nivel:'ipn', q:"Una onda de frecuencia 50 Hz se propaga a 200 m/s. Su longitud de onda es:", o:["0.25 m", "4 m", "150 m", "10 000 m"], c:1, e:"λ=v/f=200/50=4 m."},
+
+            // QUÍMICA (10)
+            {s:'quimica', tema:'estructura_atomica', nivel:'ipn', q:"Un átomo neutro con número atómico 17 tiene:", o:["17 protones y 17 electrones", "17 protones y 34 electrones", "34 protones y 17 electrones", "17 neutrones necesariamente"], c:0, e:"El número atómico indica protones; en un átomo neutro, protones y electrones son iguales."},
+            {s:'quimica', tema:'tabla_periodica', nivel:'ipn', q:"¿Cuál elemento tiene mayor electronegatividad?", o:["Na", "Cl", "F", "O"], c:2, e:"El flúor es el elemento más electronegativo de la tabla periódica."},
+            {s:'quimica', tema:'enlaces', nivel:'ipn', q:"El enlace predominante en NaCl es:", o:["Covalente no polar", "Covalente polar", "Iónico", "Metálico"], c:2, e:"El sodio transfiere un electrón al cloro, formando los iones Na⁺ y Cl⁻."},
+            {s:'quimica', tema:'nomenclatura', nivel:'ipn', q:"El nombre de $H_2SO_4$ es:", o:["Ácido sulfuroso", "Ácido sulfúrico", "Ácido sulfhídrico", "Sulfato de hidrógeno"], c:1, e:"H₂SO₄ se nombra ácido sulfúrico."},
+            {s:'quimica', tema:'balanceo', nivel:'ipn', q:"Al balancear $Al+O_2\rightarrow Al_2O_3$, los coeficientes mínimos son:", o:["2, 1, 1", "4, 3, 2", "2, 3, 2", "4, 2, 2"], c:1, e:"La ecuación balanceada es 4Al+3O₂→2Al₂O₃."},
+            {s:'quimica', tema:'mol', nivel:'ipn', q:"¿Cuántos moles hay en 36 g de agua? Masa molar de $H_2O=18$ g/mol.", o:["0.5 mol", "1 mol", "2 mol", "18 mol"], c:2, e:"n=m/M=36/18=2 mol."},
+            {s:'quimica', tema:'soluciones', nivel:'ipn', q:"Una solución contiene 0.5 mol de soluto en 2 L. Su molaridad es:", o:["0.25 M", "1 M", "2.5 M", "4 M"], c:0, e:"M=n/V=0.5/2=0.25 mol/L."},
+            {s:'quimica', tema:'acidos_bases', nivel:'ipn', q:"Una disolución con pH=3 es:", o:["Neutra", "Básica", "Ácida", "Saturada"], c:2, e:"Todo pH menor que 7 corresponde a una disolución ácida."},
+            {s:'quimica', tema:'gases', nivel:'ipn', q:"Si la temperatura de un gas aumenta a volumen constante, su presión:", o:["Disminuye", "Aumenta", "No cambia", "Se vuelve cero"], c:1, e:"A volumen y cantidad constantes, P es directamente proporcional a la temperatura absoluta."},
+            {s:'quimica', tema:'organica', nivel:'ipn', q:"El grupo funcional característico de los alcoholes es:", o:["-COOH", "-CHO", "-OH", "-NH₂"], c:2, e:"Los alcoholes contienen el grupo hidroxilo, -OH."},
+
+            // BIOLOGÍA (10)
+            {s:'biologia', tema:'celula', nivel:'ipn', q:"Organelo donde ocurre principalmente la respiración celular aerobia:", o:["Ribosoma", "Mitocondria", "Lisosoma", "Aparato de Golgi"], c:1, e:"La mitocondria produce ATP mediante el ciclo de Krebs y la cadena respiratoria."},
+            {s:'biologia', tema:'membrana', nivel:'ipn', q:"El movimiento de agua a través de una membrana semipermeable se llama:", o:["Difusión facilitada", "Fagocitosis", "Ósmosis", "Transporte activo"], c:2, e:"La ósmosis es el movimiento neto de agua a través de una membrana semipermeable."},
+            {s:'biologia', tema:'genetica', nivel:'ipn', q:"Si A es dominante y a recesivo, la cruza Aa × aa produce descendencia recesiva en proporción de:", o:["0%", "25%", "50%", "100%"], c:2, e:"Aa produce gametos A y a; aa solo a. La mitad será aa y expresará el rasgo recesivo."},
+            {s:'biologia', tema:'adn', nivel:'ipn', q:"En el ADN, la adenina se aparea con:", o:["Citosina", "Guanina", "Timina", "Uracilo"], c:2, e:"En ADN, A se une con T mediante dos puentes de hidrógeno."},
+            {s:'biologia', tema:'division_celular', nivel:'ipn', q:"La meiosis origina normalmente:", o:["Dos células diploides idénticas", "Cuatro células haploides", "Una célula diploide", "Cuatro células diploides"], c:1, e:"Dos divisiones meióticas producen cuatro células haploides genéticamente distintas."},
+            {s:'biologia', tema:'fotosintesis', nivel:'ipn', q:"La fase luminosa de la fotosíntesis ocurre en:", o:["El núcleo", "El estroma", "Las membranas de los tilacoides", "La matriz mitocondrial"], c:2, e:"Los fotosistemas y la cadena transportadora se encuentran en las membranas tilacoidales."},
+            {s:'biologia', tema:'evolucion', nivel:'ipn', q:"La selección natural favorece a los individuos que:", o:["Son siempre los más grandes", "Poseen rasgos heredables ventajosos en su ambiente", "Modifican voluntariamente sus genes", "No presentan variación"], c:1, e:"Los rasgos heredables que aumentan supervivencia o reproducción tienden a hacerse más frecuentes."},
+            {s:'biologia', tema:'ecologia', nivel:'ipn', q:"En una cadena alimentaria, los productores:", o:["Obtienen energía consumiendo animales", "Transforman energía para fabricar materia orgánica", "Descomponen únicamente proteínas", "Ocupan siempre el último nivel"], c:1, e:"Los autótrofos producen materia orgánica, generalmente mediante fotosíntesis."},
+            {s:'biologia', tema:'sistemas', nivel:'ipn', q:"La hormona que disminuye la glucosa en sangre es:", o:["Adrenalina", "Insulina", "Glucagón", "Tiroxina"], c:1, e:"La insulina favorece la captación de glucosa y la formación de glucógeno."},
+            {s:'biologia', tema:'sistema_inmune', nivel:'ipn', q:"Las células que producen anticuerpos son principalmente:", o:["Eritrocitos", "Plaquetas", "Linfocitos B diferenciados", "Neuronas"], c:2, e:"Los linfocitos B se diferencian en células plasmáticas productoras de anticuerpos."},
+
+            // HISTORIA (10)
+            {s:'historia', tema:'mesoamerica', nivel:'ipn', q:"La Triple Alianza estaba integrada por:", o:["Tenochtitlan, Texcoco y Tlacopan", "Tula, Cholula y Mitla", "Mayapán, Uxmal y Chichén Itzá", "Tlaxcala, Huejotzingo y Cholula"], c:0, e:"La alianza hegemónica del Posclásico reunió a México-Tenochtitlan, Texcoco y Tlacopan."},
+            {s:'historia', tema:'independencia', nivel:'ipn', q:"El documento en el que Morelos planteó la independencia y la soberanía popular fue:", o:["Plan de Iguala", "Sentimientos de la Nación", "Constitución de 1857", "Tratados de Córdoba"], c:1, e:"Morelos presentó Sentimientos de la Nación ante el Congreso de Chilpancingo en 1813."},
+            {s:'historia', tema:'independencia', nivel:'ipn', q:"Las tres garantías del Plan de Iguala fueron:", o:["Libertad, igualdad y fraternidad", "Religión, independencia y unión", "Tierra, libertad y justicia", "Paz, orden y progreso"], c:1, e:"El Plan de Iguala proclamó religión católica, independencia y unión."},
+            {s:'historia', tema:'reforma', nivel:'ipn', q:"Las Leyes de Reforma establecieron principalmente:", o:["La monarquía hereditaria", "La separación entre Iglesia y Estado", "La reelección presidencial indefinida", "El regreso de los fueros eclesiásticos"], c:1, e:"Nacionalizaron bienes eclesiásticos y consolidaron la separación Iglesia-Estado."},
+            {s:'historia', tema:'porfiriato', nivel:'ipn', q:"Una característica económica del Porfiriato fue:", o:["El aislamiento de capital extranjero", "La expansión ferroviaria con inversión extranjera", "La eliminación de haciendas", "La desaparición de la minería"], c:1, e:"La inversión extranjera impulsó ferrocarriles, minería e industria, con fuertes costos sociales."},
+            {s:'historia', tema:'revolucion', nivel:'ipn', q:"El Plan de San Luis convocó al levantamiento contra:", o:["Victoriano Huerta", "Venustiano Carranza", "Porfirio Díaz", "Álvaro Obregón"], c:2, e:"Francisco I. Madero llamó a levantarse el 20 de noviembre de 1910 contra Díaz."},
+            {s:'historia', tema:'revolucion', nivel:'ipn', q:"El Plan de Ayala, encabezado por Zapata, exigía principalmente:", o:["Restitución de tierras", "Inversión petrolera extranjera", "Educación religiosa", "Reelección presidencial"], c:0, e:"Su demanda central fue devolver tierras, montes y aguas a los pueblos."},
+            {s:'historia', tema:'constitucion', nivel:'ipn', q:"El artículo 123 de la Constitución de 1917 se refiere a:", o:["Educación", "Propiedad de tierras y aguas", "Derechos laborales", "Libertad religiosa"], c:2, e:"El artículo 123 reconoce derechos de las personas trabajadoras."},
+            {s:'historia', tema:'cardenismo', nivel:'ipn', q:"La expropiación petrolera fue decretada en 1938 por:", o:["Plutarco Elías Calles", "Lázaro Cárdenas", "Manuel Ávila Camacho", "Miguel Alemán"], c:1, e:"Lázaro Cárdenas decretó la expropiación el 18 de marzo de 1938."},
+            {s:'historia', tema:'ipn', nivel:'ipn', q:"El Instituto Politécnico Nacional fue creado durante el gobierno de:", o:["Venustiano Carranza", "Lázaro Cárdenas", "Adolfo López Mateos", "Gustavo Díaz Ordaz"], c:1, e:"El IPN fue creado en 1936 durante el gobierno de Lázaro Cárdenas."},
+
+            // GEOGRAFÍA (10)
+            {s:'geografia', tema:'coordenadas', nivel:'ipn', q:"La latitud mide la distancia angular respecto al:", o:["Meridiano de Greenwich", "Ecuador", "Trópico de Cáncer", "Polo norte solamente"], c:1, e:"La latitud se mide de 0° a 90° al norte o sur del ecuador."},
+            {s:'geografia', tema:'husos_horarios', nivel:'ipn', q:"La Tierra gira 360° en 24 horas; por ello, cada huso horario ideal abarca:", o:["10°", "15°", "24°", "30°"], c:1, e:"360°/24=15° por hora."},
+            {s:'geografia', tema:'tectonica', nivel:'ipn', q:"La mayor parte de los sismos de México se relaciona con:", o:["La erosión eólica", "La interacción de placas tectónicas", "Las mareas", "La rotación terrestre"], c:1, e:"México se ubica en el contacto de varias placas; la subducción genera intensa sismicidad."},
+            {s:'geografia', tema:'relieve', nivel:'ipn', q:"La cordillera que atraviesa México aproximadamente de oeste a este y concentra numerosos volcanes es:", o:["Sierra Madre Oriental", "Eje Neovolcánico", "Sierra Madre del Sur", "Sierra de Baja California"], c:1, e:"El Eje Neovolcánico cruza el centro del país y contiene volcanes como Popocatépetl y Pico de Orizaba."},
+            {s:'geografia', tema:'clima', nivel:'ipn', q:"El factor que explica principalmente la disminución de temperatura al ascender una montaña es:", o:["Latitud", "Altitud", "Longitud", "Vegetación"], c:1, e:"La temperatura suele disminuir conforme aumenta la altitud."},
+            {s:'geografia', tema:'hidrografia', nivel:'ipn', q:"Una cuenca endorreica se caracteriza porque sus aguas:", o:["Desembocan siempre en el océano", "No tienen salida al mar", "Proceden solo de glaciares", "Son exclusivamente subterráneas"], c:1, e:"En una cuenca endorreica el agua drena hacia lagos o depresiones interiores."},
+            {s:'geografia', tema:'poblacion', nivel:'ipn', q:"La densidad de población se calcula dividiendo:", o:["Superficie entre habitantes", "Habitantes entre superficie", "Nacimientos entre defunciones", "Migrantes entre población"], c:1, e:"Densidad=población/superficie, normalmente habitantes por km²."},
+            {s:'geografia', tema:'migracion', nivel:'ipn', q:"Cuando una persona sale de su país para residir en otro, desde el país de origen se registra como:", o:["Inmigración", "Emigración", "Crecimiento natural", "Conurbación"], c:1, e:"Emigrar significa salir; inmigrar significa llegar."},
+            {s:'geografia', tema:'economia', nivel:'ipn', q:"La agricultura, la ganadería y la pesca pertenecen al sector:", o:["Primario", "Secundario", "Terciario", "Cuaternario"], c:0, e:"El sector primario obtiene recursos directamente de la naturaleza."},
+            {s:'geografia', tema:'ambiente', nivel:'ipn', q:"La pérdida de suelo fértil causada por agua o viento se denomina:", o:["Eutrofización", "Erosión", "Sublimación", "Salinización atmosférica"], c:1, e:"La erosión remueve y transporta partículas del suelo por acción del agua, viento u otros agentes."},
+
+            // ESPAÑOL / EXPRESIÓN ESCRITA (10)
+            {s:'escrita', tema:'ortografia', nivel:'ipn', q:"Selecciona la oración escrita correctamente.", o:["Aún no sé por que faltó.", "Aun no sé por qué faltó.", "Aún no sé por qué faltó.", "Aún no se porqué faltó."], c:2, e:"Aún equivale a todavía; sé lleva tilde y por qué se usa en preguntas indirectas."},
+            {s:'escrita', tema:'acentuacion', nivel:'ipn', q:"¿Cuál palabra es esdrújula?", o:["Canción", "Examen", "Teléfono", "Pared"], c:2, e:"Te-lé-fo-no lleva la fuerza en la antepenúltima sílaba; todas las esdrújulas se acentúan."},
+            {s:'escrita', tema:'puntuacion', nivel:'ipn', q:"Elige la puntuación correcta.", o:["Daniel estudió matemáticas física y química.", "Daniel estudió: matemáticas, física y química.", "Daniel, estudió matemáticas, física, y química.", "Daniel estudió; matemáticas física y química."], c:1, e:"Los dos puntos introducen la enumeración y las comas separan sus elementos."},
+            {s:'escrita', tema:'concordancia', nivel:'ipn', q:"Selecciona la oración con concordancia correcta.", o:["La mayoría de los alumnos aprobaron el examen.", "La mayoría de los alumno aprobó los exámenes.", "Las mayoría de alumnos aprobaron.", "La mayoría aprobaron el examen difícilmente fueron."], c:0, e:"Hay concordancia nominal y una construcción verbal válida con el sustantivo colectivo y su complemento plural."},
+            {s:'escrita', tema:'conectores', nivel:'ipn', q:"Completa: Estudió con constancia; ___, mejoró su resultado.", o:["sin embargo", "por lo tanto", "aunque", "en cambio"], c:1, e:"Por lo tanto expresa una consecuencia lógica de lo anterior."},
+            {s:'escrita', tema:'oracion', nivel:'ipn', q:"En “Los estudiantes resolvieron el simulacro”, el núcleo del predicado es:", o:["Los", "estudiantes", "resolvieron", "simulacro"], c:2, e:"El núcleo del predicado verbal es el verbo resolvieron."},
+            {s:'escrita', tema:'lexico', nivel:'ipn', q:"El antónimo de “efímero” es:", o:["Breve", "Pasajero", "Duradero", "Frágil"], c:2, e:"Efímero significa de corta duración; su opuesto es duradero."},
+            {s:'escrita', tema:'vicios_lenguaje', nivel:'ipn', q:"¿Qué oración evita la redundancia?", o:["Sube arriba de inmediato.", "Lo vi con mis propios ojos.", "Entró al salón.", "Volvió a repetir la respuesta."], c:2, e:"Entró al salón expresa la idea sin repetir información contenida en el verbo."},
+            {s:'escrita', tema:'metodologia', nivel:'ipn', q:"En una investigación, una hipótesis es:", o:["Una conclusión comprobada e inmutable", "Una explicación provisional que puede ponerse a prueba", "La lista de fuentes consultadas", "El título del informe"], c:1, e:"La hipótesis propone una respuesta provisional y verificable al problema."},
+            {s:'escrita', tema:'fichas', nivel:'ipn', q:"¿Qué dato es indispensable en una referencia de libro?", o:["Color de la portada", "Autor y título", "Precio de compra", "Número de lectores"], c:1, e:"Autor y título identifican la obra; una referencia completa añade editorial, lugar, año y otros datos según el estilo."},
+
+            // COMPRENSIÓN LECTORA / LITERATURA (10)
+            {s:'lectura', tema:'idea_principal', nivel:'ipn', q:"Texto: “Dormir consolida la memoria. Durante el sueño, el cerebro reorganiza información adquirida durante el día.” ¿Cuál es la idea principal?", o:["El cerebro deja de funcionar al dormir.", "El sueño contribuye a consolidar lo aprendido.", "Solo se aprende durante la noche.", "La memoria impide dormir."], c:1, e:"Las dos oraciones explican que el sueño ayuda a organizar y conservar información."},
+            {s:'lectura', tema:'inferencia', nivel:'ipn', q:"“Al salir, Lucía abrió el paraguas y apresuró el paso entre los charcos.” Se infiere que:", o:["Hacía mucho calor", "Había llovido o estaba lloviendo", "Lucía perdió el paraguas", "La calle estaba cerrada"], c:1, e:"El paraguas y los charcos permiten inferir lluvia reciente o presente."},
+            {s:'lectura', tema:'proposito', nivel:'ipn', q:"Un texto que explica causas, consecuencias y medidas de prevención de un sismo tiene propósito principalmente:", o:["Narrativo", "Informativo", "Lírico", "Publicitario"], c:1, e:"Su finalidad central es comunicar y explicar información objetiva."},
+            {s:'lectura', tema:'argumentacion', nivel:'ipn', q:"En un texto argumentativo, la tesis es:", o:["La postura que el autor defiende", "Una cita sin relación", "El nombre del lector", "La lista de párrafos"], c:0, e:"La tesis es la idea o postura central sostenida mediante argumentos."},
+            {s:'lectura', tema:'hecho_opinion', nivel:'ipn', q:"¿Cuál enunciado expresa una opinión?", o:["El agua hierve cerca de 100 °C al nivel del mar.", "La Tierra gira alrededor del Sol.", "La física es la materia más fascinante.", "México se ubica en América."], c:2, e:"“Más fascinante” es una valoración subjetiva, no un hecho verificable universal."},
+            {s:'lectura', tema:'figuras', nivel:'ipn', q:"En “El viento susurraba entre los árboles” aparece:", o:["Hipérbole", "Personificación", "Antítesis", "Onomatopeya"], c:1, e:"Se atribuye al viento una acción humana: susurrar."},
+            {s:'lectura', tema:'generos', nivel:'ipn', q:"El género literario que presenta acciones mediante diálogos y está destinado a representación escénica es:", o:["Lírico", "Dramático", "Ensayístico", "Épico"], c:1, e:"El género dramático se construye para ser representado por personajes en escena."},
+            {s:'lectura', tema:'narrador', nivel:'ipn', q:"“Caminé durante horas hasta que encontré el pueblo.” El narrador está en:", o:["Primera persona", "Segunda persona", "Tercera persona omnisciente", "Tercera persona objetiva"], c:0, e:"La forma verbal caminé indica que el narrador cuenta su propia experiencia en primera persona."},
+            {s:'lectura', tema:'cohesion', nivel:'ipn', q:"En “María compró un libro. Lo leyó esa noche”, la palabra “lo” se refiere a:", o:["María", "un libro", "esa noche", "compró"], c:1, e:"El pronombre lo sustituye al complemento masculino singular un libro."},
+            {s:'lectura', tema:'sintesis', nivel:'ipn', q:"Una síntesis adecuada debe:", o:["Copiar íntegramente el texto", "Conservar ideas esenciales con redacción breve", "Agregar datos no presentes", "Eliminar la idea principal"], c:1, e:"Sintetizar exige seleccionar y relacionar las ideas esenciales con concisión y fidelidad."}
+        ];
+
 
    // --- ESTADO DE LA APP ---
         let userQuestions = [];
@@ -453,22 +553,22 @@
         }
 
         function setActiveNav(tab) {
-            navQuiz.classList.remove('text-rose-600');
-            navStats.classList.remove('text-rose-600');
-            if(tab === 'quiz') navQuiz.classList.add('text-rose-600');
-            if(tab === 'stats') navStats.classList.add('text-rose-600');
+            navQuiz.classList.remove('text-yellow-400');
+            navStats.classList.remove('text-yellow-400');
+            if(tab === 'quiz') navQuiz.classList.add('text-yellow-400');
+            if(tab === 'stats') navStats.classList.add('text-yellow-400');
         }
 
         function goHome() {
             setActiveNav('quiz');
             scoreDisplay.classList.add('hidden');
             
-            let allQ = [...examQuestions, ...userQuestions];
+            let allQ = [...examQuestions, ...ipnExpansionQuestions, ...userQuestions];
             
             let html = `
                 <div class="px-4 py-6 animate-pop pb-20">
-                    <h2 class="text-3xl font-black mb-1">Simulador UNAM/IPN</h2>
-                    <p class="text-slate-500 mb-6 font-semibold">Selecciona el módulo a entrenar:</p>
+                    <h2 class="text-3xl font-black mb-1">Simulador IPN</h2>
+                    <p class="text-slate-500 mb-6 font-semibold">Nivel Ingeniería y Ciencias Físico Matemáticas</p>
                     <div class="grid grid-cols-2 gap-4">
             `;
 
@@ -581,7 +681,7 @@
         function startQuiz(subject) {
             currentSubject = subject;
             
-            let allQ = [...examQuestions, ...userQuestions];
+            let allQ = [...examQuestions, ...ipnExpansionQuestions, ...userQuestions];
             let rawQuestions = allQ.filter(q => q.s === subject);
             
             if (rawQuestions.length === 0) {
@@ -704,7 +804,7 @@
             let msgTitle, msgSub, bgClass, txtClass;
             
             if(percentage >= 80) {
-                msgTitle = "¡NIVEL UNAM/IPN! 🚀";
+                msgTitle = "¡NIVEL IPN! 🚀";
                 msgSub = "Estás listo para asegurar tu lugar. Brutal.";
                 bgClass = "bg-emerald-100 border-emerald-200";
                 txtClass = "text-emerald-600";
@@ -714,7 +814,7 @@
                 bgClass = "bg-amber-100 border-amber-200";
                 txtClass = "text-amber-600";
             } else {
-                msgTitle = "MODO LOCK IN REQUERIDO 🔒";
+                msgTitle = "DANIEL, TOCA ESTUDIAR 🔒";
                 msgSub = "No te rindas. Usa las explicaciones para aprender de los errores.";
                 bgClass = "bg-rose-100 border-rose-200";
                 txtClass = "text-rose-600";
